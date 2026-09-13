@@ -645,8 +645,6 @@ All suggestions and alternative approaches were critically evaluated, adapted wh
 
 This project was intentionally developed as a **hands-on learning environment for statistical programming and healthcare data analysis in R**.
 
-This project was intentionally developed as a **hands-on learning environment for statistical programming and healthcare data analysis in R**.
-
 The R code, analytical workflow, statistical reasoning, and project structure were developed primarily by me.
 
 AI was used as a **learning and review tool** throughout the development process. In particular, it was used to:
