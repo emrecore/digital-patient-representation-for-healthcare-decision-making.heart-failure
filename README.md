@@ -637,6 +637,14 @@ The project is particularly relevant to areas such as:
 
 ## Learning Approach and AI Usage
 
+This project was also designed as a practical learning environment for developing my R and statistical analysis skills. The R code, statistical analysis logic, variable classification, and project structure were created primarily by me.
+
+AI was used as a learning, review, and improvement tool throughout the development process. It was used to evaluate my analytical approach, review code, explain potential issues, and demonstrate alternative ways of implementing analyses in R. These alternatives helped me understand different coding approaches and improve my own solutions rather than simply replacing them.
+
+All suggestions and alternative approaches were critically evaluated, adapted where appropriate, and validated by me before being included in the project.
+
+This project was intentionally developed as a **hands-on learning environment for statistical programming and healthcare data analysis in R**.
+
 This project was intentionally developed as a **hands-on learning environment for statistical programming and healthcare data analysis in R**.
 
 The R code, analytical workflow, statistical reasoning, and project structure were developed primarily by me.
