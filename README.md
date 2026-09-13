@@ -225,9 +225,11 @@ The dataset contains no documented missing observations.
 
 ## AI Usage
 
-AI was used as a review and improvement tool during development. The R code, statistical analysis logic, variable classification, and project structure were created primarily by me.
+This project was also designed as a practical learning environment for developing my R and statistical analysis skills. The R code, statistical analysis logic, variable classification, and project structure were created primarily by me.
 
-AI was used to review code, identify potential issues, improve clarity, and suggest refinements. All suggestions were evaluated, adapted, and validated by me before being included.
+AI was used as a learning, review, and improvement tool throughout the development process. It was used to evaluate my analytical approach, review code, explain potential issues, and demonstrate alternative ways of implementing analyses in R. These alternatives helped me understand different coding approaches and improve my own solutions rather than simply replacing them.
+
+All suggestions and alternative approaches were critically evaluated, adapted where appropriate, and validated by me before being included in the project.
 
 ## About
 
