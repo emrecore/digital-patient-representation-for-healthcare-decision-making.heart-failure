@@ -637,30 +637,15 @@ The project is particularly relevant to areas such as:
 
 ## Learning Approach and AI Usage
 
-This project was also designed as a practical learning environment for developing my R and statistical analysis skills. The R code, statistical analysis logic, variable classification, and project structure were created primarily by me.
+This project was intentionally developed as a hands-on learning environment to strengthen my practical skills in R, statistical analysis, and the structured evaluation of healthcare data.
 
-AI was used as a learning, review, and improvement tool throughout the development process. It was used to evaluate my analytical approach, review code, explain potential issues, and demonstrate alternative ways of implementing analyses in R. These alternatives helped me understand different coding approaches and improve my own solutions rather than simply replacing them.
+The R code, statistical workflow, project structure, and analytical decisions were primarily developed and implemented by me. AI was used as a learning and review tool throughout the project rather than as a substitute for the analytical process.
 
-All suggestions and alternative approaches were critically evaluated, adapted where appropriate, and validated by me before being included in the project.
+In particular, AI supported my learning by reviewing parts of my code and statistical reasoning, pointing out potential weaknesses or alternative approaches, and explaining different ways to implement certain tasks in R. This allowed me to compare approaches, improve my understanding of the underlying methods, and refine the quality and readability of my code.
 
-This project was intentionally developed as a **hands-on learning environment for statistical programming and healthcare data analysis in R**.
+All suggestions were critically evaluated before implementation. Statistical methods, interpretations, and changes to the analysis were only incorporated after I had understood their purpose and verified that they were appropriate for the dataset and the objectives of the project.
 
-The R code, analytical workflow, statistical reasoning, and project structure were developed primarily by me.
-
-AI was used as a **learning and review tool** throughout the development process. In particular, it was used to:
-
-* review my analytical approach and code
-* identify potential weaknesses or mistakes
-* explain alternative ways of implementing analyses in R
-* demonstrate different coding approaches for the same statistical task
-* improve code readability and documentation
-* challenge and refine statistical interpretations
-
-Rather than directly replacing the analytical work, AI served as an interactive learning resource comparable to a tutor or code reviewer.
-
-Suggestions were evaluated, understood, adapted where appropriate, and incorporated only after reviewing their statistical and technical reasoning.
-
-The main purpose of this approach was not only to produce a functioning analysis, but to improve my ability to independently design, implement, and interpret statistical analyses in R.
+The goal of using AI was therefore not to automate the project, but to create an interactive learning environment in which I could continuously improve my programming, statistical reasoning, and analytical decision-making while remaining responsible for the final implementation and interpretation.
 
 ---
 
