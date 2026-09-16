@@ -1,357 +1,285 @@
 # ============================================================
-# Project: Heart Failure Clinical Statistical Analysis with R
+# Project: Digital Patient Representation for
+#          Healthcare Decision-Making: Heart Failure
 # File: 04_data_visualization.R
-# Purpose: Visualize numerical clinical distributions,
-# categorical patient characteristics, and mortality outcomes.
-# Language: R
+# Purpose: Visualize overall distributions, categorical
+#          characteristics, and selected mortality-group
+#          patterns.
 # ============================================================
 
 
 # ============================================================
-# 1. Load visualization package
-# ggplot2 is used to create statistical visualizations
-# throughout the analysis.
+# 1. Confirm required objects from script 01
+# ============================================================
+
+required_objects <- c(
+  "heart_failure",
+  "numerical_variables",
+  "categorical_variables",
+  "baseline_numerical_variables",
+  "outcome_variable"
+)
+
+missing_objects <- required_objects[
+  !vapply(
+    required_objects,
+    exists,
+    logical(1),
+    inherits = TRUE
+  )
+]
+
+if (length(missing_objects) > 0) {
+  stop(
+    paste(
+      "Run 01_data_import_and_setup.R first. Missing objects:",
+      paste(missing_objects, collapse = ", ")
+    )
+  )
+}
+
+
+# ============================================================
+# 2. Load visualization package
 # ============================================================
 
 library(ggplot2)
 
 
 # ============================================================
-# 2. Visualize age distribution
-# Display the distribution of patient age.
+# 3. Define plotting labels
+# Used only for graphical presentation.
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = age)
-) +
-  geom_histogram(
-    bins = 20
-  ) +
-  labs(
-    title = "Distribution of Patient Age",
-    x = "Age",
-    y = "Frequency"
-  ) +
-  theme_minimal()
+plot_labels <- c(
+  age = "Age (years)",
+  creatinine_phosphokinase = "Creatinine Phosphokinase (mcg/L)",
+  ejection_fraction = "Ejection Fraction (%)",
+  platelets = "Platelets (kiloplatelets/mL)",
+  serum_creatinine = "Serum Creatinine (mg/dL)",
+  serum_sodium = "Serum Sodium (mEq/L)",
+  time = "Follow-up Duration (days)",
+  anaemia = "Anaemia",
+  diabetes = "Diabetes",
+  high_blood_pressure = "High Blood Pressure",
+  sex = "Sex",
+  smoking = "Smoking Status",
+  DEATH_EVENT = "Mortality Outcome"
+)
 
-
-# ============================================================
-# 3. Visualize creatinine phosphokinase distribution
-# Display the distribution of CPK enzyme levels.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = creatinine_phosphokinase)
-) +
-  geom_histogram(
-    bins = 30
-  ) +
-  labs(
-    title = "Distribution of Creatinine Phosphokinase",
-    x = "Creatinine Phosphokinase",
-    y = "Frequency"
-  ) +
-  theme_minimal()
+get_plot_label <- function(variable) {
+  unname(
+    plot_labels[
+      variable
+    ]
+  )
+}
 
 
 # ============================================================
-# 4. Visualize ejection fraction distribution
-# Display the distribution of cardiac ejection fraction.
+# 4. Define reusable plotting functions
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = ejection_fraction)
-) +
-  geom_histogram(
-    bins = 20
+make_histogram <- function(variable) {
+  
+  ggplot(
+    heart_failure,
+    aes(
+      x = .data[[variable]]
+    )
   ) +
-  labs(
-    title = "Distribution of Ejection Fraction",
-    x = "Ejection Fraction (%)",
-    y = "Frequency"
+    geom_histogram(
+      bins = 25
+    ) +
+    labs(
+      title = paste(
+        "Distribution of",
+        get_plot_label(variable)
+      ),
+      x = get_plot_label(variable),
+      y = "Number of Patients"
+    ) +
+    theme_minimal()
+}
+
+
+make_boxplot <- function(variable) {
+  
+  ggplot(
+    heart_failure,
+    aes(
+      y = .data[[variable]]
+    )
   ) +
-  theme_minimal()
+    geom_boxplot() +
+    labs(
+      title = paste(
+        "Distribution of",
+        get_plot_label(variable)
+      ),
+      x = NULL,
+      y = get_plot_label(variable)
+    ) +
+    theme_minimal()
+}
 
 
-# ============================================================
-# 5. Visualize platelet distribution
-# Display the distribution of platelet counts.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = platelets)
-) +
-  geom_histogram(
-    bins = 30
+make_barplot <- function(variable) {
+  
+  ggplot(
+    heart_failure,
+    aes(
+      x = .data[[variable]]
+    )
   ) +
-  labs(
-    title = "Distribution of Platelet Count",
-    x = "Platelets",
-    y = "Frequency"
+    geom_bar() +
+    labs(
+      title = paste(
+        get_plot_label(variable),
+        "Distribution"
+      ),
+      x = get_plot_label(variable),
+      y = "Number of Patients"
+    ) +
+    theme_minimal()
+}
+
+
+make_outcome_boxplot <- function(variable) {
+  
+  ggplot(
+    heart_failure,
+    aes(
+      x = .data[[outcome_variable]],
+      y = .data[[variable]]
+    )
   ) +
-  theme_minimal()
-
-
-# ============================================================
-# 6. Visualize serum creatinine distribution
-# Display the distribution of serum creatinine levels.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = serum_creatinine)
-) +
-  geom_histogram(
-    bins = 30
-  ) +
-  labs(
-    title = "Distribution of Serum Creatinine",
-    x = "Serum Creatinine",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-
-
-# ============================================================
-# 7. Visualize serum sodium distribution
-# Display the distribution of serum sodium levels.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = serum_sodium)
-) +
-  geom_histogram(
-    bins = 20
-  ) +
-  labs(
-    title = "Distribution of Serum Sodium",
-    x = "Serum Sodium",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-
-
-# ============================================================
-# 8. Visualize follow-up time distribution
-# Display the distribution of patient follow-up periods.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = time)
-) +
-  geom_histogram(
-    bins = 20
-  ) +
-  labs(
-    title = "Distribution of Follow-up Time",
-    x = "Follow-up Time",
-    y = "Frequency"
-  ) +
-  theme_minimal()
+    geom_boxplot() +
+    labs(
+      title = paste(
+        get_plot_label(variable),
+        "by Mortality Outcome"
+      ),
+      x = "Mortality Outcome",
+      y = get_plot_label(variable)
+    ) +
+    theme_minimal()
+}
 
 
 # ============================================================
-# 9. Visualize numerical variables with boxplots
-# Display numerical distributions and visually identify
-# unusually high or low observations.
+# 5. Create numerical distribution plots
+# Histograms visualize distributional shape.
+# Boxplots complement them by highlighting spread and unusual
+# observations.
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(y = age)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Patient Age",
-    y = "Age"
-  ) +
-  theme_minimal()
+numerical_histograms <- setNames(
+  lapply(
+    numerical_variables,
+    make_histogram
+  ),
+  numerical_variables
+)
 
-
-ggplot(
-  heart_failure,
-  aes(y = creatinine_phosphokinase)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Creatinine Phosphokinase",
-    y = "Creatinine Phosphokinase"
-  ) +
-  theme_minimal()
-
-
-ggplot(
-  heart_failure,
-  aes(y = ejection_fraction)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Ejection Fraction",
-    y = "Ejection Fraction (%)"
-  ) +
-  theme_minimal()
-
-
-ggplot(
-  heart_failure,
-  aes(y = platelets)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Platelet Count",
-    y = "Platelets"
-  ) +
-  theme_minimal()
-
-
-ggplot(
-  heart_failure,
-  aes(y = serum_creatinine)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Serum Creatinine",
-    y = "Serum Creatinine"
-  ) +
-  theme_minimal()
-
-
-ggplot(
-  heart_failure,
-  aes(y = serum_sodium)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Serum Sodium",
-    y = "Serum Sodium"
-  ) +
-  theme_minimal()
-
-
-ggplot(
-  heart_failure,
-  aes(y = time)
-) +
-  geom_boxplot() +
-  labs(
-    title = "Distribution of Follow-up Time",
-    y = "Follow-up Time"
-  ) +
-  theme_minimal()
+numerical_boxplots <- setNames(
+  lapply(
+    numerical_variables,
+    make_boxplot
+  ),
+  numerical_variables
+)
 
 
 # ============================================================
-# 10. Visualize anaemia distribution
-# Display the number of patients with and without anaemia.
+# 6. Create categorical distribution plots
+# Includes baseline categorical characteristics and mortality
+# outcome for the complete observed population.
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = anaemia)
-) +
-  geom_bar() +
-  labs(
-    title = "Anaemia Distribution",
-    x = "Anaemia",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
+categorical_barplots <- setNames(
+  lapply(
+    categorical_variables,
+    make_barplot
+  ),
+  categorical_variables
+)
 
 
 # ============================================================
-# 11. Visualize diabetes distribution
-# Display the number of patients with and without diabetes.
+# 7. Visualize baseline numerical variables by mortality group
+# These plots are descriptive only.
+#
+# Follow-up time is excluded because it represents observation
+# duration rather than baseline patient information.
+# Formal group comparison is performed later in scripts 05–06.
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = diabetes)
-) +
-  geom_bar() +
-  labs(
-    title = "Diabetes Distribution",
-    x = "Diabetes",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
-
-
-# ============================================================
-# 12. Visualize high blood pressure distribution
-# Display the number of patients with and without
-# high blood pressure.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = high_blood_pressure)
-) +
-  geom_bar() +
-  labs(
-    title = "High Blood Pressure Distribution",
-    x = "High Blood Pressure",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
+mortality_group_boxplots <- setNames(
+  lapply(
+    baseline_numerical_variables,
+    make_outcome_boxplot
+  ),
+  baseline_numerical_variables
+)
 
 
 # ============================================================
-# 13. Visualize sex distribution
-# Display the number of female and male patients.
+# 8. Consolidate visualization objects
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = sex)
-) +
-  geom_bar() +
-  labs(
-    title = "Sex Distribution",
-    x = "Sex",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
-
-
-# ============================================================
-# 14. Visualize smoking distribution
-# Display the number of smokers and non-smokers.
-# ============================================================
-
-ggplot(
-  heart_failure,
-  aes(x = smoking)
-) +
-  geom_bar() +
-  labs(
-    title = "Smoking Status Distribution",
-    x = "Smoking",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
+data_visualizations <- list(
+  
+  Numerical_Histograms =
+    numerical_histograms,
+  
+  Numerical_Boxplots =
+    numerical_boxplots,
+  
+  Categorical_Barplots =
+    categorical_barplots,
+  
+  Mortality_Group_Boxplots =
+    mortality_group_boxplots
+)
 
 
 # ============================================================
-# 15. Visualize mortality outcome distribution
-# Display the number of patients with and without a recorded
-# death event during follow-up.
+# 9. Display plots
 # ============================================================
 
-ggplot(
-  heart_failure,
-  aes(x = DEATH_EVENT)
-) +
-  geom_bar() +
-  labs(
-    title = "Mortality Outcome Distribution",
-    x = "Mortality Outcome",
-    y = "Number of Patients"
-  ) +
-  theme_minimal()
+invisible(
+  lapply(
+    numerical_histograms,
+    print
+  )
+)
+
+invisible(
+  lapply(
+    numerical_boxplots,
+    print
+  )
+)
+
+invisible(
+  lapply(
+    categorical_barplots,
+    print
+  )
+)
+
+invisible(
+  lapply(
+    mortality_group_boxplots,
+    print
+  )
+)
+
+
+# ============================================================
+# 10. Return complete visualization object
+# ============================================================
+
+data_visualizations
 
