@@ -1,35 +1,39 @@
-# Heart Failure Clinical Statistical Analysis with R
+# Digital Patient Representation for Healthcare Decision-Making: Heart Failure
 
 ## Overview
 
-This project presents a structured statistical analysis of digital clinical records from patients with heart failure using R.
+This project presents a structured statistical analysis of digital clinical records from patients with heart failure using **R**.
 
-The project has two connected objectives.
+It combines two connected objectives:
 
-First, it applies a complete statistical workflow to investigate patient characteristics, clinical measurements, mortality patterns, and associations between available health variables and recorded mortality.
+1. **Clinical statistical analysis**  
+   Examine demographic characteristics, clinical measurements, mortality patterns, and statistical associations within the available patient data.
 
-Second, it examines a broader methodological question that is central to data-driven healthcare:
+2. **Digital patient representation analysis**  
+   Examine how statistical conclusions depend on the amount and structure of patient information available to the analytical model.
 
-> **How adequately can a patient be represented through available digital health data, and how reliable are statistical conclusions and potential healthcare decisions when they are based on this representation?**
+The broader methodological question is:
 
-The dataset contains clinical records from 299 patients with heart failure, including demographic characteristics, comorbidities, laboratory measurements, cardiac function, follow-up duration, and a recorded mortality outcome.
+> **How adequately can patients be represented through available digital health data, and how reliable are statistical conclusions and potential healthcare decisions when they are based on this representation?**
 
-The project therefore treats the dataset not simply as a collection of variables, but as a **partial digital representation of real patients**.
+The dataset contains records from **299 patients with heart failure**, including demographic characteristics, comorbidities, laboratory measurements, cardiac function, follow-up duration, and a recorded mortality outcome.
 
-This distinction is important.
+The project therefore treats the dataset not simply as a table of variables, but as a **partial digital representation of real patients**.
 
-A statistical model can only analyze information that has been digitally recorded. Relevant patient information that is absent, simplified, aggregated, or transformed cannot directly contribute to the resulting statistical evidence.
-
-The analytical framework of the project can therefore be summarized as:
+The core analytical logic is:
 
 ```text
 Real Patient
     ↓
 Digital Patient Representation
     ↓
-Data Quality and Statistical Analysis
+Data Quality
+    ↓
+Statistical Analysis
     ↓
 Statistical Evidence
+    ↓
+Representation Sensitivity
     ↓
 Reliability Assessment
     ↓
@@ -38,27 +42,35 @@ Potential Decision Implications
 Clinical and Methodological Limits
 ```
 
-The project is exploratory and explanatory. It does not provide clinical recommendations, establish causal relationships, or represent a clinically validated prediction system.
+The project is **exploratory and explanatory**.
+
+It does not:
+
+- establish causal relationships
+- provide clinical treatment recommendations
+- define clinical decision thresholds
+- evaluate real healthcare-management interventions
+- represent a clinically validated prediction system
 
 ---
 
-## Research Framework
+# Research Perspective
 
-This project is the first implementation of a broader analytical framework focused on the relationship between **digital patient representation, statistical reliability, and data-driven healthcare decision-making**.
+A statistical model does not analyze the complete real-world patient.
 
-The central idea is that healthcare datasets contain representations of patients rather than the patients themselves.
+It analyzes the information that has been digitally recorded about that patient.
 
-Formally, the distinction can be conceptualized as:
+Conceptually:
 
 ```text
-Real Patient ≠ Digital Patient Representation
+Real Patient
+    ≠
+Digital Patient Representation
 ```
 
-A real patient may be characterized by a large and continuously changing set of clinical, physiological, behavioral, therapeutic, social, and contextual characteristics.
+A real patient may be characterized by clinical, physiological, behavioral, therapeutic, social, and contextual information that extends far beyond the variables available in one dataset.
 
-A digital dataset captures only a subset of this information.
-
-The resulting analytical process can therefore be represented as:
+The analytical process can therefore be represented as:
 
 ```text
 P(real)
@@ -69,100 +81,72 @@ Statistical Model
     ↓
 Statistical Evidence
     ↓
-Decision Support
+Potential Decision Support
 ```
 
-The reliability of the final conclusion depends partly on the quality and completeness of the digital representation on which it is based.
+This project distinguishes between two related but different concepts:
 
-This project therefore distinguishes between two concepts:
+> **Statistical reliability**  
+> Whether a statistical result is methodologically supported and sufficiently stable within the available data.
 
-> **Statistical reliability:**  
-> Whether a statistical result is methodologically supported by the available data.
+and:
 
-and
+> **Clinical validity**  
+> Whether the available patient information and resulting evidence are sufficient and appropriate for interpretation in the real clinical context.
 
-> **Clinical validity:**  
-> Whether the available information and resulting statistical evidence are sufficient and appropriate for interpretation in the real clinical context.
+A model may be statistically coherent while clinically relevant patient information remains unavailable.
 
-These concepts are related but not equivalent.
+Therefore:
 
-A model may be statistically well specified within the available dataset while important clinical information remains unobserved.
-
-This distinction forms the methodological foundation of the project.
+```text
+Statistical reliability
+        ≠
+Clinical validity
+```
 
 ---
 
-## Research Questions
+# Research Questions
 
-The analysis addresses five connected groups of research questions.
+The project addresses five connected groups of questions.
 
-### 1. Patient Representation
+## 1. Patient Representation
 
-- Which dimensions of the patients are represented in the available digital dataset?
+- Which dimensions of the patient are digitally represented?
 - How are these dimensions encoded?
-- Which information is continuous, categorical, binary, or time-dependent?
-- Which potentially relevant patient dimensions are not represented?
+- Which potentially relevant patient dimensions are absent?
+- At what level of granularity is the available information represented?
 
-### 2. Statistical Description
+## 2. Statistical Description
 
 - What are the main demographic and clinical characteristics of the observed patient population?
-- How frequently did mortality occur during the available follow-up period?
+- How frequently did a recorded death event occur?
 - How are important clinical measurements distributed?
 
-### 3. Statistical Associations
+## 3. Statistical Associations
 
 - Which characteristics differ between patients with and without a recorded death event?
-- Which variables show statistically supported associations with mortality?
-- Which associations remain after adjustment for other available patient characteristics?
+- Which variables show statistically supported mortality associations?
+- Which associations remain after adjustment for other available baseline characteristics?
 - How consistent are findings across different statistical approaches?
 
-### 4. Representation Reliability
+## 4. Representation Sensitivity
 
-- How dependent are statistical conclusions on the amount and form of patient information available?
-- What happens when the digital patient representation becomes less informative?
-- Which patient-information domains contribute meaningfully to the resulting statistical evidence?
-- How sensitive are analytical conclusions to simplification or information loss?
+- How dependent are statistical conclusions on the amount of patient information available?
+- How do model outputs change when the digital patient representation becomes less informative?
+- What happens when continuous information is simplified?
+- How sensitive are patient-level model estimates to information reduction?
 
-### 5. Decision and Clinical Interpretation
+## 5. Decision and Clinical Interpretation
 
-- Which conclusions could potentially contribute to healthcare decision support?
-- Which conclusions remain too uncertain for decision-making?
-- Which limitations arise from missing patient information?
+- What type of healthcare decision support could potentially use this information?
+- Which conclusions remain too uncertain for real-world decisions?
+- Which limitations result from missing patient information?
 - Where does statistical interpretation end and additional clinical expertise become necessary?
 
-Together, these questions move the project beyond conventional exploratory data analysis toward a structured examination of the reliability of digital patient information.
-
 ---
 
-## Healthcare Context
-
-Heart failure is a complex cardiovascular condition in which the heart is unable to provide sufficient circulatory function to meet the physiological requirements of the body.
-
-Patient prognosis may be related to multiple interacting dimensions of health, including:
-
-- age
-- cardiac function
-- renal function
-- metabolic and hematological measurements
-- comorbidities
-- cardiovascular risk factors
-- treatment characteristics
-- disease severity
-- longitudinal disease development
-
-The available dataset captures some, but not all, of these dimensions.
-
-This makes the dataset particularly useful for demonstrating an important principle of healthcare analytics:
-
-> **The quality of a statistical conclusion depends not only on the statistical method, but also on what information about the patient was available to the analysis in the first place.**
-
-The objective is therefore not merely to identify mortality-associated variables.
-
-The project also evaluates the boundaries of what can reasonably be concluded from the available digital patient representation.
-
----
-
-## Dataset
+# Dataset
 
 The project uses the **Heart Failure Clinical Records** dataset from the UCI Machine Learning Repository.
 
@@ -175,13 +159,15 @@ The dataset contains:
 
 Each row represents one patient.
 
-The primary outcome is `DEATH_EVENT`, indicating whether a death event was recorded during the available follow-up period.
+The primary outcome is:
 
-### Dataset Source
+```text
+DEATH_EVENT
+```
 
-The dataset is publicly available through the **UCI Machine Learning Repository**.
+indicating whether a death event was recorded during follow-up.
 
-It is associated with:
+The dataset is associated with:
 
 > Chicco, D. & Jurman, G.  
 > *Machine learning can predict survival of patients with heart failure from serum creatinine and ejection fraction alone.*  
@@ -193,98 +179,97 @@ UCI Dataset DOI:
 10.24432/C5Z89R
 ```
 
-The dataset is distributed under the **Creative Commons Attribution 4.0 International (CC BY 4.0)** license.
+License:
+
+```text
+Creative Commons Attribution 4.0 International
+CC BY 4.0
+```
 
 ---
 
-## Variable Dictionary
+# Variable Dictionary
 
 | Variable | Type | Unit / Coding | Description |
 |---|---|---|---|
 | `age` | Numeric | years | Age of the patient |
-| `anaemia` | Binary | 0 = No, 1 = Yes | Indicates whether the patient had anaemia |
-| `creatinine_phosphokinase` | Numeric | mcg/L | Creatinine phosphokinase enzyme level |
-| `diabetes` | Binary | 0 = No, 1 = Yes | Indicates whether the patient had diabetes |
+| `anaemia` | Binary | 0 = No, 1 = Yes | Presence of anaemia |
+| `creatinine_phosphokinase` | Numeric | mcg/L | Creatinine phosphokinase level |
+| `diabetes` | Binary | 0 = No, 1 = Yes | Presence of diabetes |
 | `ejection_fraction` | Numeric | % | Percentage of blood leaving the left ventricle during contraction |
-| `high_blood_pressure` | Binary | 0 = No, 1 = Yes | Indicates whether the patient had hypertension |
+| `high_blood_pressure` | Binary | 0 = No, 1 = Yes | Presence of hypertension |
 | `platelets` | Numeric | kiloplatelets/mL | Platelet concentration |
 | `serum_creatinine` | Numeric | mg/dL | Serum creatinine concentration |
 | `serum_sodium` | Numeric | mEq/L | Serum sodium concentration |
 | `sex` | Binary | 0 = Female, 1 = Male | Biological sex recorded in the dataset |
-| `smoking` | Binary | 0 = No, 1 = Yes | Indicates whether the patient smoked |
-| `time` | Numeric | days | Duration of follow-up |
-| `DEATH_EVENT` | Binary outcome | 0 = Survived, 1 = Died | Recorded mortality during follow-up |
+| `smoking` | Binary | 0 = No, 1 = Yes | Recorded smoking status |
+| `time` | Numeric | days | Follow-up duration |
+| `DEATH_EVENT` | Binary outcome | 0 = No death event, 1 = Death event | Recorded mortality during follow-up |
 
-Binary variables are converted into labelled factors during data preparation where appropriate in order to improve readability and statistical interpretation.
+Binary variables are converted into labelled factors during data preparation where appropriate.
 
 ---
 
 # Digital Patient Representation
 
-## Why Patient Representation Matters
-
-The dataset does not contain a complete description of each individual patient.
-
-Instead, every row represents a selected digital abstraction of that patient.
-
-The analytical question is therefore not simply:
-
-> What information is contained in the dataset?
-
-but also:
-
-> **What information about the patient is represented, how is it represented, and what information is absent?**
-
-This distinction becomes particularly important when statistical evidence is intended to inform real healthcare decisions.
-
----
-
 ## Representation Map
 
-The available variables can be organized into broader patient-information domains.
+The dataset represents selected dimensions of the patient.
 
-| Patient Dimension | Representation in Dataset | Available Information |
+| Patient Dimension | Representation | Available Information |
 |---|---|---|
 | Demographics | Partial | Age, sex |
 | Cardiac function | Partial | Ejection fraction |
 | Renal status | Partial | Serum creatinine |
-| Hematological information | Partial | Platelets, anaemia |
-| Biochemical information | Partial | Serum sodium, creatinine phosphokinase |
-| Comorbidities | Partial | Diabetes, anaemia, hypertension |
+| Hematological information | Partial | Anaemia, platelets |
+| Biochemical information | Partial | Serum sodium, creatinine phosphokinase, serum creatinine |
+| Comorbidities | Partial | Anaemia, diabetes, hypertension |
 | Behavioral risk factors | Very limited | Smoking status |
 | Mortality outcome | Available | Recorded death event |
 | Follow-up information | Available | Follow-up duration |
+| Detailed disease severity | Limited | Selected clinical measurements only |
 | Medication | Not represented | No detailed medication information |
 | Treatment interventions | Not represented | No detailed treatment information |
 | Symptoms | Not represented | No structured symptom information |
 | Functional status | Not represented | No detailed functional assessment |
-| Longitudinal laboratory development | Not represented | No repeated measurement trajectories |
+| Longitudinal clinical development | Not represented | No repeated measurement trajectories |
 | Patient-reported outcomes | Not represented | No quality-of-life or symptom-reported outcomes |
-| Detailed disease severity | Limited | Only selected clinical measurements |
 | Socioeconomic context | Not represented | No socioeconomic characteristics |
 | Healthcare resource use | Not represented | No staffing, cost, capacity, or utilization variables |
 | Management decisions | Not represented | No observed management interventions |
 
 The purpose of this map is not to classify the dataset as inadequate.
 
-Every healthcare dataset necessarily represents only selected dimensions of reality.
+Instead, it makes the informational boundaries of the statistical analysis explicit.
 
-Instead, the map makes the informational boundaries of the analysis explicit.
+A dataset may be technically complete while still omitting entire patient-information dimensions.
+
+Therefore:
+
+```text
+Technical completeness
+        ≠
+Complete patient representation
+```
 
 ---
 
-## Representation Layers
+# Representation Layers
 
-For methodological purposes, the available baseline patient information can also be considered in increasingly information-rich layers.
+The project defines four nested baseline patient representations.
 
-### Layer 1 — Basic Demographic Representation
+These layers are used later in the representation sensitivity analysis.
+
+## Layer 1 — Basic Demographic Representation
 
 ```text
 age
 sex
 ```
 
-### Layer 2 — Demographics, Comorbidities and Risk Factors
+---
+
+## Layer 2 — Demographics, Comorbidities and Risk Factors
 
 ```text
 age
@@ -295,396 +280,459 @@ high_blood_pressure
 smoking
 ```
 
-### Layer 3 — Clinical and Laboratory Representation
+---
 
-The previous information is supplemented by:
+## Layer 3 — Expanded Clinical Representation
+
+Layer 3 adds selected cardiac, renal, and biochemical information:
 
 ```text
-creatinine_phosphokinase
 ejection_fraction
-platelets
 serum_creatinine
 serum_sodium
 ```
 
-### Layer 4 — Full Available Baseline Representation
+Complete Layer 3:
 
-All available baseline patient characteristics are used simultaneously.
+```text
+age
+sex
+anaemia
+diabetes
+high_blood_pressure
+smoking
+ejection_fraction
+serum_creatinine
+serum_sodium
+```
 
-This layered structure makes it possible to investigate how statistical conclusions change as the digital representation becomes more or less informative.
+---
+
+## Layer 4 — Full Available Baseline Representation
+
+Layer 4 additionally includes:
+
+```text
+creatinine_phosphokinase
+platelets
+```
+
+Complete Layer 4:
+
+```text
+age
+sex
+anaemia
+diabetes
+high_blood_pressure
+smoking
+ejection_fraction
+serum_creatinine
+serum_sodium
+creatinine_phosphokinase
+platelets
+```
+
+Layer 4 therefore represents the **full available baseline representation** used in the project.
+
+Importantly:
+
+```text
+Full available representation
+        ≠
+Complete real-world patient
+```
 
 ---
 
 # Analysis Workflow
 
-The analytical workflow is designed to move systematically from raw digital patient records toward increasingly complex statistical interpretation.
+The scripts are intentionally sequential.
+
+Each script has one primary analytical responsibility.
 
 ```text
-Data Import
-    ↓
-Variable Configuration
-    ↓
-Patient Representation Assessment
-    ↓
-Data Quality Assessment
-    ↓
-Descriptive Statistics
-    ↓
-Data Visualization
-    ↓
-Mortality Group Comparisons
-    ↓
-Hypothesis Testing
-    ↓
-Multiple-Testing Adjustment
-    ↓
-Correlation Analysis
-    ↓
-Univariable Regression
-    ↓
-Multivariable Regression
-    ↓
-Representation Sensitivity Analysis
-    ↓
-Reliability Assessment
-    ↓
-Decision Implications
-    ↓
-Clinical and Methodological Limits
-    ↓
-Final Analytical Summary
+01  Data Import and Setup
+        ↓
+02  Patient Representation and Data Quality
+        ↓
+03  Descriptive Statistics
+        ↓
+04  Data Visualization
+        ↓
+05  Descriptive Outcome Group Comparisons
+        ↓
+06  Formal Hypothesis Testing
+        ↓
+07  Exploratory Correlation Analysis
+        ↓
+08  Logistic Regression Analysis
+        ↓
+09  Representation Sensitivity Analysis
+        ↓
+10  Final Clinical and Decision Insights
 ```
 
-Each analytical stage is implemented separately to keep the workflow transparent, reproducible, and interpretable.
+The separation is deliberate.
+
+Later analytical stages should not be performed prematurely in earlier scripts.
+
+For example:
+
+```text
+03 describes
+05 compares descriptively
+06 tests formally
+07 explores correlation
+08 models mortality associations
+09 changes the patient representation
+10 integrates the evidence
+```
 
 ---
 
-# Data Quality Assessment
+# Statistical Workflow
 
-Digital patient information must first be evaluated before statistical conclusions are drawn from it.
+## Data Quality
 
-The project therefore performs explicit checks for:
+The project evaluates:
 
-- missing values
-- duplicated observations
+- expected variables
 - variable classes
-- binary-variable coding
-- logically implausible values
-- unexpected numerical observations
-- unusual distributions
-- potential outliers
-- inconsistencies introduced during preprocessing
+- missing values
+- duplicate observations
+- categorical coding
+- non-finite values
+- logically impossible numerical values
+- constant variables
+- unusual observations
+- potential statistical outliers
 
-The original UCI dataset contains no documented missing observations.
+Extreme observations are not automatically removed.
 
-Nevertheless, missing-value checks are performed explicitly rather than assuming that imported or transformed data remain complete.
-
-Extreme observations are not removed automatically.
-
-In healthcare datasets, unusual values may represent genuinely high-risk or clinically unusual patients rather than data-entry errors.
-
-Removal would therefore require substantive justification.
+In clinical datasets, unusual measurements may represent genuine patients rather than data-entry errors.
 
 ---
 
-# Descriptive Statistics
+## Descriptive Statistics
 
-Descriptive analysis is used to characterize the digital patient population before inferential statistical methods are applied.
-
-For continuous variables, the project considers measures including:
+Continuous variables are summarized using:
 
 - mean
-- median
 - standard deviation
-- interquartile range
+- median
 - quartiles
+- interquartile range
 - minimum
 - maximum
 
-For categorical variables, the analysis considers:
+Categorical variables are summarized using:
 
-- absolute frequencies
-- relative frequencies
+- frequencies
 - proportions
-
-These statistics are evaluated for the overall patient population and, where appropriate, separately according to mortality status.
-
-Using several measures of central tendency and dispersion is particularly important because some clinical variables show substantial skewness or extreme observations.
+- percentages
 
 ---
 
-# Data Visualization
+## Data Visualization
 
-Clinical variables are explored graphically using `ggplot2`.
+`ggplot2` is used to explore:
 
-Visualizations include:
-
-- histograms
-- boxplots
-- bar charts
-- mortality-group comparisons
-
-The visual analysis supports the assessment of:
-
-- distributional shape
+- distributions
 - skewness
-- extreme observations
-- differences between mortality groups
-- potential limitations of purely numerical summaries
+- extreme values
+- categorical composition
+- mortality-group patterns
+- selected continuous-variable relationships
 
-Graphical exploration is therefore used as a complement to, rather than a replacement for, formal statistical analysis.
+Visual analysis complements rather than replaces statistical inference.
 
 ---
 
-# Mortality Group Comparisons
+## Outcome Group Comparisons
 
-Patients are compared according to the binary outcome variable `DEATH_EVENT`.
+Patients are compared according to:
 
 ```text
-0 = survived during follow-up
-1 = recorded death during follow-up
+No death event
 ```
 
-The selected statistical procedure depends on the structure and empirical distribution of the respective variable.
+versus:
 
-Depending on the analytical context, the project uses:
+```text
+Death event
+```
+
+Baseline variables and follow-up duration are treated separately.
+
+The descriptive group-comparison stage does not perform formal hypothesis testing.
+
+---
+
+## Hypothesis Testing
+
+Depending on variable structure and distribution, the project uses:
 
 - Welch two-sample t-tests
 - Wilcoxon rank-sum tests
 - Pearson chi-squared tests
 - Fisher's exact tests
 
-This allows continuous and categorical patient characteristics to be evaluated using methods appropriate to their measurement scale and distribution.
+Categorical association magnitude may additionally be described using:
+
+```text
+Cramér's V
+```
 
 ---
 
-# Multiple-Testing Adjustment
+## Multiple-Testing Adjustment
 
-Evaluating many clinical characteristics simultaneously increases the probability of obtaining statistically significant results by chance.
+The project applies the **Benjamini-Hochberg procedure** to the primary family of mortality-group hypothesis tests.
 
-The project therefore applies the **Benjamini-Hochberg procedure** to relevant families of hypothesis tests.
-
-The procedure controls the false discovery rate.
-
-Where appropriate, both values are retained:
+Both values are retained:
 
 ```text
 Raw p-value
 Adjusted p-value
 ```
 
-This makes it possible to distinguish between nominal statistical significance and evidence that remains supported after accounting for multiple comparisons.
+The adjusted results provide the primary group-level inferential evidence.
 
 ---
 
-# Correlation Analysis
+## Correlation Analysis
 
-Relationships between continuous clinical variables are evaluated using Spearman rank correlation.
-
-Spearman's correlation is particularly useful because several variables contain skewed distributions or extreme observations.
-
-The coefficient ranges between:
+Continuous baseline characteristics are evaluated using:
 
 ```text
--1 ≤ ρ ≤ 1
+Spearman rank correlation
 ```
 
-where:
+The analysis is primarily exploratory.
 
-- values approaching `+1` indicate stronger positive monotonic relationships
-- values approaching `-1` indicate stronger negative monotonic relationships
-- values approaching `0` indicate limited monotonic association
+Correlation p-values are not used as the central inferential evidence of the project.
 
-Correlation is not interpreted as evidence of causality.
-
-Likewise, weak correlation between two variables does not imply that either variable lacks clinical or prognostic relevance.
+Correlation does not establish causality.
 
 ---
 
-# Logistic Regression
+## Logistic Regression
 
-Because `DEATH_EVENT` is binary, mortality associations are investigated further using binary logistic regression.
+Because `DEATH_EVENT` is binary, mortality associations are evaluated using logistic regression.
 
-The model can be represented as:
+The project includes:
 
 ```text
-log(p / (1 - p))
-=
-β0 + β1X1 + β2X2 + ... + βkXk
+Univariable logistic regression
 ```
 
-where `p` represents the estimated probability of a recorded mortality event.
-
-Regression coefficients are exponentiated to obtain odds ratios:
+and:
 
 ```text
-ORj = exp(βj)
+Multivariable logistic regression
 ```
 
-The project includes both univariable and multivariable analyses.
+Results include:
+
+- regression coefficients
+- odds ratios
+- 95% confidence intervals
+- p-values
+
+The multivariable model uses all available baseline patient characteristics.
+
+`time` is not treated as a baseline predictor because it represents follow-up duration.
 
 ---
 
-## Univariable Regression
+## Regression Diagnostics
 
-Univariable logistic regression evaluates each selected patient characteristic individually.
+The multivariable regression stage additionally considers:
 
-For each predictor, the analysis considers:
+- model convergence
+- model sample size
+- event count
+- AIC
+- residual deviance
+- log-likelihood
+- McFadden pseudo-R²
+- in-sample Brier score
+- Cook's distance
+- leverage
+- standardized deviance residuals
 
-- regression coefficient
-- odds ratio
-- 95% confidence interval
-- p-value
+Diagnostic flags are used for inspection only.
 
-These models describe unadjusted associations.
-
-They should therefore not be interpreted as independent or causal effects.
-
----
-
-## Multivariable Regression
-
-Multivariable logistic regression evaluates several available patient characteristics simultaneously.
-
-This allows the association between one predictor and mortality to be interpreted conditional on the other variables included in the model.
-
-Interpretation considers:
-
-- direction of association
-- estimated effect magnitude
-- odds ratio
-- 95% confidence interval
-- statistical uncertainty
-- measurement scale
-- consistency with other analytical stages
-- clinical plausibility
-- limitations of the available patient representation
-
-An adjusted association is not equivalent to a causal effect.
+They are not automatic patient-exclusion rules.
 
 ---
 
 # Representation Sensitivity Analysis
 
-A central extension of the conventional statistical workflow is the explicit analysis of **information dependence**.
+The central methodological extension of the project evaluates how model outputs change when the digital patient representation changes.
 
-The objective is to examine whether analytical conclusions remain stable when the digital representation of the patient changes.
+The underlying patients remain the same.
 
-Instead of assuming that one available dataset represents the patient sufficiently, the analysis compares increasingly information-rich patient representations.
+Only the information available to the model changes.
 
 Conceptually:
 
 ```text
-Reduced Patient Representation
+Same Patients
+        +
+Different Digital Representation
         ↓
-Statistical Model
+Different Statistical Model
         ↓
-Statistical Evidence
-
-versus
-
-More Complete Available Representation
-        ↓
-Statistical Model
-        ↓
-Statistical Evidence
+Potentially Different Statistical Evidence
 ```
 
-The comparison focuses on questions such as:
+The four representation layers are compared using measures such as:
 
-- Do estimated associations change materially?
-- Do uncertainty intervals become wider?
-- Do previously supported associations disappear?
-- Do additional clinical measurements substantially alter the estimated relationships?
-- Are conclusions strongly dependent on a small number of recorded patient dimensions?
-- How stable are patient-level statistical estimates when information is reduced?
+- AIC
+- residual deviance
+- McFadden pseudo-R²
+- Brier score
+- likelihood-ratio comparisons
+- coefficient stability
+- patient-level predicted probabilities
 
 The purpose is not to identify a universally optimal model.
 
-Instead, the purpose is to understand how strongly statistical conclusions depend on the available digital representation of the patient.
+Instead, the analysis evaluates **information dependence**.
 
 ---
 
-## Information Loss
+# Patient-Level Probability Sensitivity
 
-Digital healthcare information can be reduced in several ways.
+For the same patient, predicted probabilities from reduced representations can be compared with the full available baseline representation.
 
-Examples include:
+Conceptually:
 
 ```text
-Variable omission
-Categorization
-Dichotomization
-Aggregation
-Rounding
-Missing information
-Loss of longitudinal information
+Reduced Representation
+        ↓
+Probability A
 ```
 
-Such transformations may make data easier to store, communicate, or use operationally, but they may also remove statistically relevant information.
+versus:
 
-This creates a general methodological question:
+```text
+Full Available Representation
+        ↓
+Probability B
+```
 
-> **How much patient information can be simplified or removed before the resulting statistical conclusions change meaningfully?**
+The difference reflects how strongly the analytical output depends on the information available about that patient.
 
-The heart failure dataset provides a controlled environment in which this problem can be investigated.
+These probabilities are:
+
+- in-sample model outputs
+- not externally validated
+- not clinical mortality-risk estimates
+- not intended for treatment decisions
+
+---
+
+# Illustrative Reclassification
+
+An illustrative threshold of:
+
+```text
+0.50
+```
+
+is used to examine whether reduced patient information can change a binary analytical model output.
+
+The resulting categories are methodological only.
+
+The threshold is not:
+
+- a clinical cutoff
+- a treatment threshold
+- a triage threshold
+- a validated risk threshold
+
+Its purpose is to demonstrate:
+
+```text
+Same Patient
+    +
+Different Available Information
+    ↓
+Potentially Different Analytical Classification
+```
+
+---
+
+# Information Loss Through Dichotomization
+
+The project also examines what happens when a continuous clinical measurement is simplified.
+
+Ejection fraction is used as the methodological example.
+
+The comparison is:
+
+```text
+Continuous ejection fraction
+```
+
+versus:
+
+```text
+Median-based binary representation
+```
+
+The median cutoff is used only as an analytical demonstration.
+
+It is not interpreted as a clinical ejection-fraction threshold.
+
+The experiment examines whether reducing informational granularity changes:
+
+- model fit
+- patient-level probabilities
+- analytical classifications
+
+This illustrates a broader principle:
+
+> **Operational simplification may reduce statistical information.**
 
 ---
 
 # Outcome Representation
 
-The primary outcome in this project is represented digitally as:
+The primary mortality outcome is represented as:
 
 ```text
-DEATH_EVENT = 0 or 1
+DEATH_EVENT
 ```
 
-This binary representation contains important information, but it also simplifies the underlying clinical process.
+The dataset also contains:
 
-The dataset additionally contains `time`, representing follow-up duration.
+```text
+time
+```
 
-Mortality status together with follow-up time creates a time-to-event structure.
+representing follow-up duration.
 
-The current primary analysis deliberately focuses on whether a death event was recorded and therefore uses logistic regression.
+Together, these variables create a time-to-event structure.
 
-However, this representation does not explicitly model **when** the event occurred.
+The current primary analysis uses logistic regression and therefore evaluates:
 
-This distinction illustrates another important aspect of digital patient representation:
+> Was a death event recorded?
 
-> The same underlying clinical process can be represented statistically in different ways, and the representation itself influences which questions can be answered.
+It does not explicitly model:
 
-A dedicated survival-analysis extension could therefore use:
+> When did the event occur?
+
+A dedicated future survival-analysis extension could use methods such as:
 
 - Kaplan-Meier estimation
 - log-rank testing
 - Cox proportional hazards regression
 
-when the analytical focus shifts from whether mortality occurred to the timing of mortality.
-
----
-
-# Statistical Reliability and Clinical Validity
-
-One of the central principles of this project is:
-
-```text
-Statistical validity ≠ Clinical validity
-```
-
-A statistically supported association does not automatically mean that:
-
-- it is clinically important
-- it is causal
-- it can be generalized to other patient populations
-- it should influence treatment
-- it is sufficient for patient-level decision-making
-- the digital dataset contains all information required for the corresponding real-world decision
-
-Statistical analysis can evaluate patterns contained in the available data.
-
-It cannot independently determine whether all clinically relevant patient information has been captured.
-
-This distinction becomes increasingly important when statistical models are used to support healthcare management, resource allocation, or clinical decision processes.
+Survival analysis is not part of the current primary workflow.
 
 ---
 
@@ -694,51 +742,47 @@ This distinction becomes increasingly important when statistical models are used
 
 Among the 299 patients:
 
-- **203 patients survived during the recorded follow-up period**
-- **96 patients experienced a recorded death event**
+```text
+203 had no recorded death event
+96 experienced a recorded death event
+```
 
-The observed mortality proportion was therefore approximately:
+The observed mortality proportion was approximately:
 
 ```text
 32.1%
 ```
 
-This mortality proportion describes the available sample and follow-up structure.
-
-It should not be interpreted as a population mortality estimate for all patients with heart failure.
+This describes the analyzed sample and should not be interpreted as a general population mortality estimate.
 
 ---
 
 ## Mortality Group Differences
 
-After Benjamini-Hochberg adjustment for multiple testing, the clearest differences between patients with and without a recorded death event were observed for:
+After Benjamini-Hochberg adjustment, the clearest mortality-group differences were observed for:
 
 - age
 - ejection fraction
 - serum creatinine
 - serum sodium
 
-These variables therefore showed the strongest group-level statistical evidence of association with mortality status within the available dataset.
-
 ---
 
 ## Age
 
-Patients who experienced a recorded death event tended to be older.
+Higher age was associated with higher mortality odds.
 
-In the multivariable logistic regression model, the adjusted odds ratio was approximately:
+The adjusted odds ratio was approximately:
 
 ```text
 OR = 1.06 per additional year
 ```
 
-Increasing age was therefore associated with higher mortality odds after adjustment for the other included characteristics.
-
 ---
 
 ## Ejection Fraction
 
-Patients who experienced a recorded death event generally had lower ejection fractions.
+Higher ejection fraction was associated with lower mortality odds.
 
 The adjusted odds ratio was approximately:
 
@@ -746,15 +790,11 @@ The adjusted odds ratio was approximately:
 OR = 0.93 per one-percentage-point increase
 ```
 
-Higher ejection fraction was therefore associated with lower estimated mortality odds.
-
-The consistency of this finding across several analytical stages makes ejection fraction one of the clearest statistical findings within the project.
-
 ---
 
 ## Serum Creatinine
 
-Higher serum creatinine values were consistently associated with mortality.
+Higher serum creatinine was associated with higher mortality odds.
 
 The adjusted odds ratio was approximately:
 
@@ -762,349 +802,166 @@ The adjusted odds ratio was approximately:
 OR = 1.94 per 1 mg/dL increase
 ```
 
-Serum creatinine showed a consistent association across:
-
-- mortality-group comparisons
-- hypothesis testing
-- univariable regression
-- multivariable regression
-
-Within the available digital patient representation, renal-function-related information therefore contributes substantially to the observed mortality pattern.
-
 ---
 
 ## Serum Sodium
 
-Lower serum sodium levels were associated with mortality in unadjusted analyses.
+Lower serum sodium was associated with mortality in unadjusted analyses and showed a mortality-group difference after multiple-testing adjustment.
 
-The difference between mortality groups remained statistically supported after multiple-testing adjustment.
-
-However, the association weakened after simultaneous adjustment for other available patient characteristics and was no longer statistically significant at the conventional 0.05 threshold in the multivariable model.
-
-This demonstrates why isolated statistical associations should not automatically be interpreted as independent relationships.
+The association weakened after multivariable adjustment.
 
 ---
 
 ## Creatinine Phosphokinase
 
-Creatinine phosphokinase reached statistical significance in the multivariable regression model.
+Creatinine phosphokinase reached statistical significance in the multivariable model.
 
-However, its estimated odds ratio per individual measurement unit is very close to `1.00` because the variable is measured on a comparatively large numerical scale.
-
-The result is therefore interpreted cautiously.
-
-It demonstrates an important statistical principle:
-
-> **Statistical significance must be interpreted together with effect magnitude and measurement scale.**
+Its per-unit odds ratio is close to `1.00`, making measurement scale important for interpretation.
 
 ---
 
-## Categorical Characteristics
+# Main Statistical Pattern
 
-The categorical patient characteristics evaluated included:
+Across several analytical stages, three patient characteristics showed particularly consistent statistical evidence:
 
-- anaemia
-- diabetes
-- high blood pressure
-- sex
-- smoking status
-
-These variables did not show sufficiently strong statistical evidence of mortality differences in the primary multiple-testing-adjusted group comparisons.
-
-This should **not** be interpreted as evidence that these characteristics are clinically irrelevant.
-
-It only means that clear mortality associations were not statistically established for these variables within the available sample and analytical framework.
-
----
-
-# Main Patient-Level Pattern
-
-Across descriptive comparisons, hypothesis testing, and regression analysis, three patient dimensions emerged particularly consistently.
-
-| Patient Dimension | Main Digital Variable | Observed Statistical Pattern |
+| Patient Dimension | Digital Variable | Observed Pattern |
 |---|---|---|
 | Demographic vulnerability | Age | Higher age associated with higher mortality odds |
 | Cardiac function | Ejection fraction | Lower ejection fraction associated with higher mortality odds |
-| Renal function | Serum creatinine | Higher serum creatinine associated with higher mortality odds |
+| Renal status | Serum creatinine | Higher serum creatinine associated with higher mortality odds |
 
-The convergence of several statistical methods provides stronger analytical support than reliance on one isolated test.
+This consistency strengthens the internal statistical evidence within the dataset.
 
-At the same time, these three variables represent only selected dimensions of patient health.
+It does not imply:
 
-They should not be interpreted as a complete description of the patient or as sufficient information for clinical decision-making.
+- causality
+- clinical sufficiency
+- treatment relevance
+- a ranking of clinical importance
 
 ---
 
-# From Patient Data to Decision Support
+# Decision Context
 
-Healthcare data are frequently used to support decisions concerning areas such as:
+The project does not evaluate real healthcare-management decisions.
 
-- resource allocation
-- patient prioritization
+The dataset contains no direct variables describing:
+
+- staffing allocation
+- hospital capacity decisions
+- treatment allocation
+- resource-allocation strategies
+- management interventions
+- quality-improvement interventions
+
+Instead, the analysis examines a prerequisite for data-driven decision support:
+
+> **How reliable is the patient information on which a potential decision would be based?**
+
+Possible future decision contexts include:
+
+- population characterization
+- healthcare demand estimation
+- risk-oriented service planning
 - capacity planning
-- quality management
-- care pathway design
-- population segmentation
-- risk stratification
-- healthcare management
+- quality monitoring
+- resource planning
+- patient segmentation
+- data-driven healthcare management
 
-This project does **not** implement or recommend such real-world decisions.
-
-Instead, it examines an analytical prerequisite for them:
-
-> **How reliable is the information on which a potential decision would be based?**
-
-The conceptual chain is:
-
-```text
-Patient
-    ↓
-Digital Patient Data
-    ↓
-Statistical Analysis
-    ↓
-Evidence
-    ↓
-Potential Decision Support
-```
-
-If the digital representation omits relevant patient characteristics, uncertainty may propagate through the entire process.
-
-For this reason, the project treats data quality and patient representation as part of decision quality rather than merely technical preprocessing issues.
-
----
-
-# Management Relevance
-
-The analysis is particularly relevant to data-driven healthcare management.
-
-Management decisions increasingly rely on digitally recorded patient information when evaluating:
-
-- patient populations
-- resource requirements
-- healthcare demand
-- quality outcomes
-- risk distributions
-- service planning
-- operational priorities
-
-The project therefore highlights a fundamental management principle:
-
-> **A data-driven healthcare decision can only be as informative as the patient representation on which the underlying analysis is based.**
-
-A statistically sophisticated model cannot automatically compensate for clinically important information that was never recorded.
-
-This connects quantitative healthcare analytics with healthcare management and clinical interpretation.
+The current project does not prescribe decisions in these areas.
 
 ---
 
 # Clinical Boundary
 
-The project deliberately separates statistical analysis from medical judgment.
-
-Statistical methods can identify:
+Statistical methods can evaluate:
 
 - distributions
+- differences
 - associations
-- effect estimates
 - uncertainty
-- model dependence
-- information sensitivity
-- consistency across analytical approaches
+- model fit
+- representation sensitivity
+- information loss
+- consistency across methods
 
-However, statistical analysis alone cannot determine:
+Statistical analysis alone cannot determine:
 
-- which missing variables are medically essential in every clinical context
-- whether an observed association is therapeutically actionable
-- whether a statistical difference is clinically meaningful
 - which treatment should be selected
-- whether an individual patient requires a particular intervention
-- whether a healthcare decision is medically appropriate
+- whether a patient requires a specific intervention
+- whether a statistical difference is clinically important
+- whether an omitted variable is medically essential
+- whether a management decision is medically appropriate
+- whether a particular threshold should trigger clinical action
 
-These questions require additional clinical knowledge and, depending on the question, additional study designs and patient information.
-
-The boundary between statistical evidence and clinical interpretation is therefore treated as an explicit part of the analytical framework rather than an afterthought.
+These questions require additional clinical evidence and expertise.
 
 ---
 
 # Interpretation Principles
 
-Several principles are applied consistently throughout the project.
+The project follows several consistent principles.
 
-## 1. Association Is Not Causation
+### 1. Association is not causation.
 
 The dataset is observational.
 
-Observed associations cannot establish that a variable directly causes mortality.
+### 2. Statistical significance is not clinical importance.
 
-Causal claims are therefore avoided.
+Effect magnitude, uncertainty, measurement scale, and context matter.
 
----
+### 3. The dataset represents the patient; it is not the patient.
 
-## 2. Statistical Significance Is Not Clinical Importance
+Unrecorded information remains unavailable to the statistical model.
 
-A statistically significant result is not automatically clinically meaningful.
+### 4. Adjusted and unadjusted associations answer different questions.
 
-Interpretation also considers:
+Changes after adjustment are analytical findings rather than contradictions.
 
-- effect magnitude
-- confidence intervals
-- measurement scale
-- model adjustment
-- sample size
-- consistency across methods
-- clinical context
-- dataset limitations
+### 5. Measurement scale matters.
 
----
+Odds ratios must be interpreted relative to the predictor unit.
 
-## 3. The Dataset Is a Representation, Not the Patient
+### 6. Extreme observations are not automatically errors.
 
-Every statistical conclusion is conditional on the information that has been recorded.
+Clinically unusual values may represent real patients.
 
-Missing patient dimensions cannot be recovered simply by applying more sophisticated statistical models.
+### 7. Information loss can matter.
 
----
+Removing or simplifying patient information may change statistical output.
 
-## 4. Adjusted and Unadjusted Associations May Differ
+### 8. Statistical reliability is not clinical validity.
 
-An association observed in isolation may weaken, disappear, or change after accounting for additional patient characteristics.
-
-This is treated as an analytical finding rather than a contradiction.
-
----
-
-## 5. Measurement Scale Matters
-
-Effect estimates must always be interpreted relative to the unit in which a predictor is measured.
-
-An odds ratio close to `1.00` per one measurement unit may still correspond to a meaningful change across a larger clinically plausible range.
-
----
-
-## 6. Extreme Values Are Not Automatically Errors
-
-Unusual clinical observations may represent genuine patients.
-
-Outliers are therefore investigated rather than automatically removed.
-
----
-
-## 7. Information Loss Matters
-
-Simplifying, categorizing, aggregating, or removing patient information may affect statistical conclusions.
-
-This effect should be examined rather than assumed to be negligible.
-
----
-
-## 8. Statistical Reliability and Clinical Validity Are Different
-
-A statistically stable result can still be clinically incomplete if relevant patient information is absent.
-
-Conversely, an important clinical relationship may remain statistically uncertain in a small dataset.
+A statistically stable model may still be clinically incomplete.
 
 ---
 
 # Limitations
 
-The findings must be interpreted within several important limitations.
+Important limitations include:
 
-- The dataset contains only 299 patients, limiting statistical precision and model complexity.
-- The data are observational and cannot establish causal relationships.
-- Unmeasured confounding may influence the observed associations.
-- The available variables represent only a subset of the patients' complete clinical states.
-- Detailed medication histories are unavailable.
-- Detailed treatment information is unavailable.
-- Structured symptom information is unavailable.
-- Patient-reported outcomes are unavailable.
-- Broader disease-severity information is limited.
-- Longitudinal clinical measurements are largely unavailable.
-- Socioeconomic and broader contextual information is unavailable.
-- Healthcare resource utilization and management variables are unavailable.
-- The binary mortality analysis does not explicitly model the timing of mortality.
-- Follow-up duration differs between patients.
-- The regression analysis has not been externally validated.
-- The dataset is not representative of the general population.
-- Statistical associations cannot automatically be converted into clinical or management recommendations.
-- The analysis is exploratory and should not be interpreted as a clinical prediction system.
+- relatively small sample size (`n = 299`)
+- observational study design
+- possible unmeasured confounding
+- incomplete representation of the real patient
+- unavailable detailed medication information
+- unavailable detailed treatment information
+- unavailable structured symptom information
+- unavailable patient-reported outcomes
+- limited disease-severity information
+- limited longitudinal clinical information
+- unavailable socioeconomic context
+- unavailable healthcare resource-use variables
+- unavailable management interventions
+- different follow-up durations
+- binary mortality modeling does not explicitly model event timing
+- no external model validation
+- no causal inference
+- no validated clinical prediction system
+- no direct evaluation of real healthcare-management decisions
 
-These limitations are not only weaknesses of the analysis.
-
-Within the broader research framework, they also demonstrate the central problem of digital patient representation:
-
-> **Real-world patients contain substantially more relevant information than any individual analytical dataset can capture.**
-
----
-
-# Healthcare Analytics Value
-
-The project demonstrates how R can be used to transform raw digital patient records into a structured, transparent, and critically interpreted statistical analysis.
-
-It combines:
-
-- healthcare data preparation
-- data quality assessment
-- digital patient representation analysis
-- descriptive statistics
-- statistical visualization
-- inferential statistics
-- multiple-testing correction
-- correlation analysis
-- regression modeling
-- uncertainty assessment
-- information-sensitivity analysis
-- healthcare interpretation
-- decision-context analysis
-- explicit recognition of clinical boundaries
-
-The framework is particularly relevant to areas such as:
-
-- Healthcare Analytics
-- Digital Health
-- Medical Statistics
-- Health Data Science
-- Clinical Research
-- Health Economics
-- Health Outcomes Research
-- Real-World Evidence
-- Health Services Research
-- Healthcare Management
-- Data-Driven Healthcare Decision-Making
-
----
-
-# R Skills Demonstrated
-
-The project demonstrates practical experience with:
-
-- clinical data import
-- data type configuration
-- factor handling
-- data quality assessment
-- missing-value checks
-- duplicate checks
-- plausibility checks
-- descriptive statistics
-- grouped summaries
-- statistical visualization
-- `ggplot2`
-- mortality-group comparisons
-- Welch t-tests
-- Wilcoxon rank-sum tests
-- chi-square tests
-- Fisher's exact tests
-- multiple-testing correction
-- confidence intervals
-- Spearman correlation
-- univariable logistic regression
-- multivariable logistic regression
-- odds-ratio interpretation
-- model comparison
-- representation sensitivity analysis
-- statistical interpretation
-- healthcare-context interpretation
-- critical evaluation of digital patient information
+These limitations are part of the central research problem rather than merely technical caveats.
 
 ---
 
@@ -1139,133 +996,185 @@ heart-failure-clinical-statistical-analysis-with-R/
     └── insights_summary.md
 ```
 
-The structure is intentionally modular.
-
-Each stage of the analytical process has a clearly defined role, allowing the same general framework to be transferred to future analyses involving different healthcare datasets and patient populations.
-
 ---
 
-# File Overview
+# File Responsibilities
 
 ## `01_data_import_and_setup.R`
 
-Imports the clinical dataset, inspects its structure, configures variable types, defines relevant variable groups, and prepares the analytical environment.
+Responsible only for:
+
+- importing the dataset
+- initial structural inspection
+- variable-type configuration
+- factor labels
+- definition of reusable variable groups
+
+It prepares the analytical environment.
+
+It does not perform data-quality analysis or statistical inference.
 
 ---
 
 ## `02_patient_representation_and_data_quality.R`
 
-Examines both the technical quality and informational structure of the digital patient representation.
+Responsible for:
 
-The script evaluates:
+- mapping available patient-information dimensions
+- identifying representation gaps
+- checking missing values
+- checking duplicates
+- validating variable classes
+- validating categorical coding
+- checking non-finite and logically invalid values
+- identifying potential statistical outliers
 
-- available patient-information domains
-- missing patient dimensions
-- missing values
-- duplicate observations
-- variable classes
-- unexpected values
-- binary coding
-- unusual numerical observations
-- potential outliers
+This is the dedicated data-quality and representation-audit stage.
 
 ---
 
 ## `03_descriptive_statistics.R`
 
-Describes the patient population using appropriate measures of central tendency, dispersion, frequencies, and proportions.
+Responsible for:
+
+- numerical descriptive statistics
+- categorical frequencies
+- proportions
+- overall patient-population summaries
+
+It does not compare mortality groups inferentially.
 
 ---
 
 ## `04_data_visualization.R`
 
-Visualizes distributions, categorical patient characteristics, mortality patterns, and differences between outcome groups using `ggplot2`.
+Responsible for:
+
+- distribution visualizations
+- categorical visualizations
+- selected mortality-group visualizations
+
+It does not perform hypothesis testing.
 
 ---
 
 ## `05_outcome_group_comparisons.R`
 
-Compares demographic and clinical characteristics between patients with and without recorded mortality events.
+Responsible for:
+
+- descriptive comparison of baseline characteristics by mortality outcome
+- categorical group summaries
+- separate description of follow-up duration
+
+It does not perform formal hypothesis tests.
 
 ---
 
 ## `06_hypothesis_testing.R`
 
-Performs formal statistical hypothesis tests and applies multiple-testing adjustment where appropriate.
+Responsible for:
+
+- formal mortality-group hypothesis tests
+- appropriate continuous-variable tests
+- categorical association tests
+- categorical effect-size estimation
+- Benjamini-Hochberg adjustment
+
+This is the primary group-level inferential stage.
 
 ---
 
 ## `07_correlation_analysis.R`
 
-Examines monotonic relationships between continuous clinical measurements using Spearman correlation.
+Responsible for:
+
+- exploratory Spearman correlation analysis
+- correlation ranking
+- selected relationship visualizations
+
+It does not model mortality.
 
 ---
 
 ## `08_regression_analysis.R`
 
-Performs univariable and multivariable logistic regression and evaluates mortality associations using odds ratios, confidence intervals, and statistical uncertainty.
+Responsible for:
+
+- univariable logistic regression
+- multivariable logistic regression
+- odds ratios
+- confidence intervals
+- model-fit summaries
+- basic influence diagnostics
+
+This stage evaluates mortality associations conditional on the available baseline representation.
 
 ---
 
 ## `09_representation_sensitivity_analysis.R`
 
-Investigates how statistical conclusions change when the amount or structure of digitally represented patient information is modified.
+Responsible for:
 
-The analysis compares alternative patient representations and evaluates the sensitivity of the resulting statistical evidence to information reduction.
+- fitting the four patient-representation models
+- comparing increasingly information-rich representations
+- evaluating model-fit changes
+- evaluating coefficient stability
+- evaluating patient-level probability sensitivity
+- illustrative reclassification
+- information-loss analysis through dichotomization
+
+This is the dedicated representation-sensitivity stage.
 
 ---
 
 ## `10_final_clinical_and_decision_insights.R`
 
-Integrates the descriptive, inferential, regression, and representation-sensitivity findings.
+Responsible for:
 
-The final stage explicitly separates:
+- integrating results from the previous analytical stages
+- comparing evidence across methods
+- summarizing representation sensitivity
+- defining decision relevance
+- defining clinical and methodological boundaries
+- producing the final analytical synthesis
 
-```text
-What the data show
-What the statistical analysis supports
-What may be relevant for decision support
-What the data cannot establish
-What requires additional clinical knowledge
-```
+This is the only script responsible for the complete project-level interpretation.
 
 ---
 
 # Documentation
 
-Additional methodological and contextual documentation is provided in the `docs/` directory.
+The `docs/` directory contains deeper methodological and contextual material.
 
 ## `healthcare_context.md`
 
-Explains the healthcare and clinical background of the analyzed variables and outcome.
+Explains the clinical meaning of the disease, variables, and outcome.
 
 ## `dataset_description.md`
 
-Documents dataset provenance, structure, variables, coding, and analytical characteristics.
+Documents dataset provenance, structure, coding, and analytical characteristics.
 
 ## `patient_representation.md`
 
-Maps the patient-information dimensions that are represented digitally and those that remain unavailable.
-
-It also documents the granularity and structure through which patient information enters the statistical analysis.
+Explains which patient dimensions are digitally represented, how they are represented, and which important dimensions remain unavailable.
 
 ## `statistical_methods.md`
 
-Explains the statistical methods used throughout the project and the reasoning behind their application.
+Documents the statistical methods, assumptions, interpretation principles, and methodological limitations.
 
 ## `decision_context.md`
 
-Examines how the statistical evidence could relate to healthcare decision support while explicitly identifying informational, methodological, and clinical boundaries.
+Explains how statistical evidence may relate to healthcare decision support while separating statistical evidence from actual decision validity.
 
 ## `insights_summary.md`
 
-Provides an extended synthesis of the main findings, representation limitations, statistical interpretation, and healthcare relevance.
+Provides the extended final interpretation of the statistical findings, representation limitations, and broader research implications.
 
 ---
 
 # Running the Analysis
 
-The scripts are designed to be executed sequentially from the repository root.
+Run the scripts sequentially from the repository root:
 
 ```text
 01_data_import_and_setup.R
@@ -1280,63 +1189,65 @@ The scripts are designed to be executed sequentially from the repository root.
 10_final_clinical_and_decision_insights.R
 ```
 
-The dataset is imported using the relative path:
+The dataset is imported using:
 
 ```text
 data/heart_failure_clinical_records_dataset.csv
 ```
 
-The visualization stage requires:
+The visualization stages require:
 
 ```r
 library(ggplot2)
 ```
 
-Running the scripts sequentially ensures that analytical objects created during earlier stages remain available for subsequent analyses.
+Later scripts may use objects created by earlier scripts.
+
+The workflow is therefore designed to be executed sequentially in one R session.
 
 ---
 
 # Reusable Analytical Blueprint
 
-The repository is intentionally structured as a reusable framework for future statistical analyses of digital patient data.
+The repository is intended to serve as a reusable framework for future analyses of digital patient data.
 
-The disease, patient population, variables, and outcome may change between projects.
+The dataset, disease, outcome, and statistical methods may change.
 
-The underlying analytical logic remains:
+The underlying research logic remains:
 
 ```text
-1. Understand the healthcare context
+1. Define the patient population
 
-2. Define the patient population
+2. Identify what is digitally represented
 
-3. Identify what aspects of the patient are digitally represented
+3. Identify important representation gaps
 
-4. Identify important patient information that is absent
+4. Validate technical data quality
 
-5. Validate data quality
+5. Describe the patient population
 
-6. Describe the observed patient population
+6. Explore distributions and relationships
 
-7. Explore distributions and relationships
+7. Compare relevant outcome groups
 
 8. Test statistical associations
 
-9. Build appropriate multivariable models
+9. Build an appropriate multivariable model
 
-10. Evaluate how conclusions depend on the available patient representation
+10. Modify the patient representation
 
-11. Assess the reliability and limitations of the resulting evidence
+11. Evaluate representation sensitivity
 
-12. Translate findings cautiously into a healthcare decision context
+12. Assess statistical reliability
 
-13. Separate statistical conclusions from clinical judgment
+13. Define potential decision implications
+
+14. Define clinical and methodological limits
 ```
 
-Future projects can therefore apply the same framework to other patient datasets while adapting the statistical methods to the structure of the respective data.
+The reusable component is therefore not one specific statistical model.
 
-The purpose is not to force every healthcare dataset into the same statistical model.
-
-Instead, the reusable component is the **research logic**:
+It is the research logic:
 
 ```text
 Patient
@@ -1354,81 +1265,121 @@ Clinical Limits
 
 ---
 
+# R Skills Demonstrated
+
+The project demonstrates practical experience with:
+
+- data import
+- data-type configuration
+- factor handling
+- data-quality assessment
+- missing-value checks
+- duplicate checks
+- plausibility checks
+- descriptive statistics
+- grouped summaries
+- `ggplot2`
+- Welch t-tests
+- Wilcoxon rank-sum tests
+- chi-squared tests
+- Fisher's exact tests
+- Cramér's V
+- Benjamini-Hochberg adjustment
+- Spearman correlation
+- univariable logistic regression
+- multivariable logistic regression
+- odds-ratio interpretation
+- confidence intervals
+- model diagnostics
+- model comparison
+- representation sensitivity analysis
+- patient-level probability comparison
+- information-loss analysis
+- healthcare-data interpretation
+
+---
+
 # Learning Approach and AI Usage
 
-This project was intentionally developed as a hands-on learning environment to strengthen my practical skills in R, statistical analysis, and the structured evaluation of healthcare data.
+This project was intentionally developed as a hands-on learning environment for:
 
-The R code, statistical workflow, project structure, and analytical decisions were primarily developed and implemented by me.
+- R
+- statistical analysis
+- healthcare data
+- analytical reasoning
+- scientific interpretation
 
-AI was used as a learning and review tool throughout the project rather than as a substitute for the analytical process.
+The R code, analytical workflow, project structure, and final statistical decisions were primarily developed and implemented by me.
 
-In particular, AI supported my learning by:
+AI was used as a **learning, review, and quality-improvement tool**.
 
-- reviewing parts of my code
+Its role included:
+
+- reviewing code
 - reviewing statistical reasoning
 - identifying potential weaknesses
-- suggesting alternative analytical approaches
-- explaining alternative implementations in R
+- explaining alternative approaches
+- suggesting alternative R implementations
 - challenging interpretations
-- improving code clarity and documentation
+- improving code clarity
+- improving documentation
 
-This allowed me to compare different approaches, improve my understanding of the underlying statistical methods, and refine the quality and readability of the analysis.
+Suggestions were evaluated before implementation.
 
-All suggestions were critically evaluated before implementation.
-
-Statistical methods, interpretations, and changes to the analytical workflow were incorporated only after I had understood their purpose and verified that they were appropriate for the dataset and research objectives.
-
-The purpose of using AI was therefore not to automate the project, but to create an interactive learning environment in which I could continuously improve my programming, statistical reasoning, and analytical decision-making while remaining responsible for the final implementation and interpretation.
+The objective was not to automate the project, but to use AI as an interactive learning environment while retaining responsibility for the final analytical decisions and interpretation.
 
 ---
 
 # Final Interpretation
 
-The conventional statistical analysis identifies a recurring pattern involving:
+The conventional statistical analysis identifies recurring mortality-related patterns involving:
 
-- higher age
-- lower ejection fraction
-- higher serum creatinine
+```text
+Higher age
+Lower ejection fraction
+Higher serum creatinine
+```
 
-These characteristics showed some of the most consistent associations with recorded mortality across the different stages of the analytical workflow.
+Serum sodium also showed mortality-related evidence in unadjusted and group-level analyses, although the relationship weakened after multivariable adjustment.
 
-Serum sodium also showed evidence of an unadjusted mortality association, although this relationship weakened after adjustment for other available patient characteristics.
+These findings demonstrate how structured statistical analysis can identify interpretable patterns within digital clinical records.
 
-These findings demonstrate how structured statistical analysis can identify interpretable patterns in digital clinical data.
+The broader conclusion of the project extends beyond these individual associations.
 
-However, the broader conclusion of the project extends beyond the individual mortality associations.
+Every statistical result is conditional on the digital representation from which it was generated.
 
-The analysis illustrates that every statistical result is conditional on the digital representation from which it was derived.
+The available dataset contains meaningful information about:
 
-The dataset contains meaningful information about demographics, selected comorbidities, laboratory measurements, cardiac function, follow-up, and mortality.
+- demographics
+- selected comorbidities
+- cardiac function
+- renal status
+- laboratory measurements
+- smoking
+- follow-up
+- mortality
 
-At the same time, it does not contain a complete representation of the patient.
+but it does not contain a complete representation of the patient.
 
-Relevant dimensions such as detailed treatment, medication, symptoms, longitudinal clinical development, patient-reported outcomes, and broader contextual information remain unavailable.
-
-The central analytical principle of the project is therefore:
+The central methodological principle is therefore:
 
 > **A statistical model does not analyze the patient directly. It analyzes the available digital representation of the patient.**
 
-Consequently, increasing statistical sophistication cannot automatically compensate for clinically relevant information that was never recorded.
+Increasing statistical sophistication cannot automatically recover relevant patient information that was never recorded.
 
-The reliability of data-driven healthcare decisions therefore depends on more than model performance alone.
-
-It also depends on:
+The reliability of data-driven healthcare conclusions therefore depends on:
 
 ```text
 What was measured
 How it was represented
 What was omitted
-How much information was lost
+How much information was simplified
 How stable the resulting evidence remains
-Whether the available information is clinically sufficient for the intended decision
+Which decision the evidence is intended to support
 ```
 
-This leads to the broader research perspective underlying the project:
+This leads to the broader research question underlying the project:
 
 > **How clinically adequate must digital patient representations be for statistical models to provide reliable support for healthcare management and decision-making?**
 
-The heart failure analysis serves as the first implementation of this framework.
-
-Its purpose is therefore not only to analyze one clinical dataset, but to establish a reproducible analytical approach for investigating the relationship between **digital patient data, statistical reliability, healthcare decisions, and clinical reality**.
+The heart failure analysis represents the first implementation of this analytical framework.
