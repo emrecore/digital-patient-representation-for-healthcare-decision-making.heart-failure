@@ -1,45 +1,93 @@
 # ============================================================
-# Project: Heart Failure Clinical Statistical Analysis with R
+# Project: Digital Patient Representation for
+#          Healthcare Decision-Making: Heart Failure
 # File: 06_hypothesis_testing.R
-# Purpose: Test statistical differences in clinical and
-# categorical characteristics across mortality outcomes.
-# Language: R
+# Purpose: Perform formal mortality-group hypothesis tests
+#          with multiple-testing adjustment.
 # ============================================================
 
 
 # ============================================================
-# 1. Define significance level
-# Statistical significance is evaluated using an alpha level
-# of 0.05.
-#
-# Benjamini-Hochberg adjustment is applied across all tests
-# to account for multiple hypothesis testing.
+# 1. Confirm required objects
+# ============================================================
+
+required_objects <- c(
+  "heart_failure",
+  "baseline_numerical_variables",
+  "baseline_categorical_variables",
+  "outcome_variable"
+)
+
+missing_objects <- required_objects[
+  !vapply(
+    required_objects,
+    exists,
+    logical(1),
+    inherits = TRUE
+  )
+]
+
+if (length(missing_objects) > 0) {
+  stop(
+    paste(
+      "Run 01_data_import_and_setup.R first. Missing objects:",
+      paste(missing_objects, collapse = ", ")
+    )
+  )
+}
+
+
+# ============================================================
+# 2. Define significance level and test allocation
+# Welch tests are used for variables where mean comparison is
+# appropriate. The remaining baseline numerical variables are
+# evaluated using Wilcoxon rank-sum tests.
 # ============================================================
 
 alpha <- 0.05
-
-
-# ============================================================
-# 2. Define variables for parametric testing
-# Welch's t-test is used for selected numerical variables
-# where comparison of group means is appropriate.
-# ============================================================
 
 t_test_variables <- c(
   "age",
   "serum_sodium"
 )
 
+wilcoxon_variables <- setdiff(
+  baseline_numerical_variables,
+  t_test_variables
+)
+
 
 # ============================================================
-# 3. Perform Welch's t-tests
-# Compare mean values between patients with and without a
-# recorded death event.
+# 3. Helper: extract mortality groups
+# ============================================================
+
+get_outcome_groups <- function(variable) {
+  
+  list(
+    no_death = na.omit(
+      heart_failure[
+        heart_failure[[outcome_variable]] ==
+          "No death event",
+        variable
+      ]
+    ),
+    
+    death = na.omit(
+      heart_failure[
+        heart_failure[[outcome_variable]] ==
+          "Death event",
+        variable
+      ]
+    )
+  )
+}
+
+
+# ============================================================
+# 4. Welch two-sample t-tests
+# Difference direction:
 #
-# H0: The group means are equal.
-# H1: The group means are different.
-#
-# Raw values are retained without rounding.
+# Death event - No death event
 # ============================================================
 
 t_test_results <- do.call(
@@ -48,71 +96,57 @@ t_test_results <- do.call(
     t_test_variables,
     function(variable) {
       
-      group_no_death <- heart_failure[
-        heart_failure$DEATH_EVENT == "No death event",
+      groups <- get_outcome_groups(
         variable
-      ]
-      
-      group_death <- heart_failure[
-        heart_failure$DEATH_EVENT == "Death event",
-        variable
-      ]
-      
-      group_no_death <- group_no_death[
-        !is.na(group_no_death)
-      ]
-      
-      group_death <- group_death[
-        !is.na(group_death)
-      ]
+      )
       
       test <- t.test(
-        group_no_death,
-        group_death,
+        groups$death,
+        groups$no_death,
         var.equal = FALSE
       )
       
       data.frame(
         Variable = variable,
         Test = "Welch t-test",
-        Mean_No_Death = mean(group_no_death),
-        Mean_Death = mean(group_death),
+        
+        Mean_No_Death =
+          mean(groups$no_death),
+        
+        Mean_Death =
+          mean(groups$death),
+        
         Mean_Difference =
-          mean(group_no_death) -
-          mean(group_death),
-        Statistic = unname(test$statistic),
-        CI_Lower = test$conf.int[1],
-        CI_Upper = test$conf.int[2],
-        P_Value = test$p.value
+          mean(groups$death) -
+          mean(groups$no_death),
+        
+        Statistic =
+          unname(test$statistic),
+        
+        CI_Lower =
+          test$conf.int[1],
+        
+        CI_Upper =
+          test$conf.int[2],
+        
+        P_Value =
+          test$p.value,
+        
+        stringsAsFactors = FALSE
       )
     }
   )
 )
 
-
-# ============================================================
-# 4. Define variables for non-parametric testing
-# The Wilcoxon rank-sum test is used for clinical variables
-# with skewed distributions or substantial outliers.
-# ============================================================
-
-wilcoxon_variables <- c(
-  "creatinine_phosphokinase",
-  "ejection_fraction",
-  "platelets",
-  "serum_creatinine"
-)
+row.names(t_test_results) <- NULL
 
 
 # ============================================================
-# 5. Perform Wilcoxon rank-sum tests
-# Compare distributions between mortality groups without
-# assuming normality.
+# 5. Wilcoxon rank-sum tests
+# Tests distributional differences without assuming normality.
 #
-# H0: The distributions are equal between groups.
-# H1: The distributions differ between groups.
-#
-# Median values are included for descriptive interpretation.
+# The location-shift estimate is not interpreted as a simple
+# median difference.
 # ============================================================
 
 wilcoxon_results <- do.call(
@@ -121,27 +155,13 @@ wilcoxon_results <- do.call(
     wilcoxon_variables,
     function(variable) {
       
-      group_no_death <- heart_failure[
-        heart_failure$DEATH_EVENT == "No death event",
+      groups <- get_outcome_groups(
         variable
-      ]
-      
-      group_death <- heart_failure[
-        heart_failure$DEATH_EVENT == "Death event",
-        variable
-      ]
-      
-      group_no_death <- group_no_death[
-        !is.na(group_no_death)
-      ]
-      
-      group_death <- group_death[
-        !is.na(group_death)
-      ]
+      )
       
       test <- wilcox.test(
-        group_no_death,
-        group_death,
+        groups$death,
+        groups$no_death,
         exact = FALSE,
         conf.int = TRUE
       )
@@ -149,55 +169,55 @@ wilcoxon_results <- do.call(
       data.frame(
         Variable = variable,
         Test = "Wilcoxon rank-sum test",
-        Median_No_Death = median(group_no_death),
-        Median_Death = median(group_death),
-        Statistic = unname(test$statistic),
+        
+        Median_No_Death =
+          median(groups$no_death),
+        
+        Median_Death =
+          median(groups$death),
+        
+        Statistic =
+          unname(test$statistic),
+        
         Location_Shift_Estimate =
           unname(test$estimate),
-        CI_Lower = test$conf.int[1],
-        CI_Upper = test$conf.int[2],
-        P_Value = test$p.value
+        
+        CI_Lower =
+          test$conf.int[1],
+        
+        CI_Upper =
+          test$conf.int[2],
+        
+        P_Value =
+          test$p.value,
+        
+        stringsAsFactors = FALSE
       )
     }
   )
 )
 
-
-# ============================================================
-# 6. Define categorical variables
-# Select categorical patient characteristics for association
-# testing with mortality outcome.
-# ============================================================
-
-categorical_variables <- c(
-  "anaemia",
-  "diabetes",
-  "high_blood_pressure",
-  "sex",
-  "smoking"
-)
+row.names(wilcoxon_results) <- NULL
 
 
 # ============================================================
-# 7. Perform categorical association tests
-# Pearson's Chi-square test is used when expected frequencies
-# are sufficiently large.
+# 6. Categorical association tests
+# Pearson's chi-squared test is used when expected cell counts
+# are adequate. Fisher's exact test is used when at least one
+# expected count is below 5.
 #
-# Fisher's exact test is used automatically if at least one
-# expected cell frequency is below 5.
-#
-# Cramer's V is reported as an effect-size measure.
+# Cramér's V describes categorical association magnitude.
 # ============================================================
 
 chi_square_results <- do.call(
   rbind,
   lapply(
-    categorical_variables,
+    baseline_categorical_variables,
     function(variable) {
       
       contingency_table <- table(
         heart_failure[[variable]],
-        heart_failure$DEATH_EVENT
+        heart_failure[[outcome_variable]]
       )
       
       chi_test <- suppressWarnings(
@@ -251,50 +271,61 @@ chi_square_results <- do.call(
         Statistic = statistic,
         Degrees_of_Freedom =
           degrees_of_freedom,
-        P_Value = p_value,
         Minimum_Expected_Count =
           minimum_expected,
-        Cramers_V = cramers_v
+        Cramers_V =
+          cramers_v,
+        P_Value =
+          p_value,
+        stringsAsFactors = FALSE
       )
     }
   )
 )
 
+row.names(chi_square_results) <- NULL
+
 
 # ============================================================
-# 8. Create combined hypothesis-test summary
-# Combine all inferential tests before multiple-testing
-# adjustment.
+# 7. Combine primary hypothesis tests
+# All baseline mortality-group tests belong to one primary
+# multiple-testing family.
 # ============================================================
 
 hypothesis_test_summary <- rbind(
   
-  data.frame(
-    Variable = t_test_results$Variable,
-    Test = t_test_results$Test,
-    P_Value = t_test_results$P_Value
-  ),
+  t_test_results[
+    c(
+      "Variable",
+      "Test",
+      "P_Value"
+    )
+  ],
   
-  data.frame(
-    Variable = wilcoxon_results$Variable,
-    Test = wilcoxon_results$Test,
-    P_Value = wilcoxon_results$P_Value
-  ),
+  wilcoxon_results[
+    c(
+      "Variable",
+      "Test",
+      "P_Value"
+    )
+  ],
   
-  data.frame(
-    Variable = chi_square_results$Variable,
-    Test = chi_square_results$Test,
-    P_Value = chi_square_results$P_Value
-  )
+  chi_square_results[
+    c(
+      "Variable",
+      "Test",
+      "P_Value"
+    )
+  ]
 )
+
+row.names(hypothesis_test_summary) <- NULL
 
 
 # ============================================================
-# 9. Adjust for multiple hypothesis testing
-# Benjamini-Hochberg adjustment controls the false discovery
-# rate across the complete set of hypothesis tests.
-#
-# Both raw and adjusted results are retained.
+# 8. Apply Benjamini-Hochberg adjustment
+# Statistical decisions are made using raw numerical values.
+# Rounding is performed only for presentation.
 # ============================================================
 
 hypothesis_test_summary$P_Adjusted_BH <- p.adjust(
@@ -314,54 +345,35 @@ hypothesis_test_summary$Significant_BH <- ifelse(
   "No"
 )
 
-
-# ============================================================
-# 10. Define primary significance decision
-# The multiple-testing-adjusted result is used as the primary
-# significance decision.
-#
-# The column name "Significant" is retained for compatibility
-# with subsequent project scripts.
-# ============================================================
-
+# Primary inferential decision used by later scripts.
 hypothesis_test_summary$Significant <-
   hypothesis_test_summary$Significant_BH
 
 
 # ============================================================
-# 11. Add adjusted results to individual test tables
+# 9. Add adjusted results to individual test tables
 # ============================================================
 
 add_adjusted_results <- function(result_table) {
   
-  result_key <- paste(
+  index <- match(
     result_table$Variable,
-    result_table$Test
-  )
-  
-  summary_key <- paste(
-    hypothesis_test_summary$Variable,
-    hypothesis_test_summary$Test
-  )
-  
-  match_index <- match(
-    result_key,
-    summary_key
+    hypothesis_test_summary$Variable
   )
   
   result_table$P_Adjusted_BH <-
     hypothesis_test_summary$P_Adjusted_BH[
-      match_index
+      index
     ]
   
   result_table$Significant_Raw <-
     hypothesis_test_summary$Significant_Raw[
-      match_index
+      index
     ]
   
   result_table$Significant_BH <-
     hypothesis_test_summary$Significant_BH[
-      match_index
+      index
     ]
   
   result_table$Significant <-
@@ -369,7 +381,6 @@ add_adjusted_results <- function(result_table) {
   
   result_table
 }
-
 
 t_test_results <- add_adjusted_results(
   t_test_results
@@ -385,15 +396,39 @@ chi_square_results <- add_adjusted_results(
 
 
 # ============================================================
-# 12. Create presentation versions
-# Raw numerical results remain unchanged.
-# Rounding and p-value formatting are applied only to copies
-# used for output.
+# 10. Create presentation versions
 # ============================================================
 
-t_test_results_display <- t_test_results
+format_results <- function(
+    result_table,
+    round_columns
+) {
+  
+  display <- result_table
+  
+  display[round_columns] <- round(
+    display[round_columns],
+    3
+  )
+  
+  display$P_Value <- format.pval(
+    result_table$P_Value,
+    digits = 4,
+    eps = 0.0001
+  )
+  
+  display$P_Adjusted_BH <- format.pval(
+    result_table$P_Adjusted_BH,
+    digits = 4,
+    eps = 0.0001
+  )
+  
+  display
+}
 
-t_test_results_display[
+
+t_test_results_display <- format_results(
+  t_test_results,
   c(
     "Mean_No_Death",
     "Mean_Death",
@@ -402,36 +437,11 @@ t_test_results_display[
     "CI_Lower",
     "CI_Upper"
   )
-] <- round(
-  t_test_results_display[
-    c(
-      "Mean_No_Death",
-      "Mean_Death",
-      "Mean_Difference",
-      "Statistic",
-      "CI_Lower",
-      "CI_Upper"
-    )
-  ],
-  3
-)
-
-t_test_results_display$P_Value <- format.pval(
-  t_test_results$P_Value,
-  digits = 4,
-  eps = 0.0001
-)
-
-t_test_results_display$P_Adjusted_BH <- format.pval(
-  t_test_results$P_Adjusted_BH,
-  digits = 4,
-  eps = 0.0001
 )
 
 
-wilcoxon_results_display <- wilcoxon_results
-
-wilcoxon_results_display[
+wilcoxon_results_display <- format_results(
+  wilcoxon_results,
   c(
     "Median_No_Death",
     "Median_Death",
@@ -440,88 +450,123 @@ wilcoxon_results_display[
     "CI_Lower",
     "CI_Upper"
   )
-] <- round(
-  wilcoxon_results_display[
-    c(
-      "Median_No_Death",
-      "Median_Death",
-      "Statistic",
-      "Location_Shift_Estimate",
-      "CI_Lower",
-      "CI_Upper"
-    )
-  ],
-  3
-)
-
-wilcoxon_results_display$P_Value <- format.pval(
-  wilcoxon_results$P_Value,
-  digits = 4,
-  eps = 0.0001
-)
-
-wilcoxon_results_display$P_Adjusted_BH <- format.pval(
-  wilcoxon_results$P_Adjusted_BH,
-  digits = 4,
-  eps = 0.0001
 )
 
 
-chi_square_results_display <- chi_square_results
-
-chi_square_results_display$Statistic <- round(
-  chi_square_results$Statistic,
-  3
-)
-
-chi_square_results_display$Minimum_Expected_Count <- round(
-  chi_square_results$Minimum_Expected_Count,
-  2
-)
-
-chi_square_results_display$Cramers_V <- round(
-  chi_square_results$Cramers_V,
-  3
-)
-
-chi_square_results_display$P_Value <- format.pval(
-  chi_square_results$P_Value,
-  digits = 4,
-  eps = 0.0001
-)
-
-chi_square_results_display$P_Adjusted_BH <- format.pval(
-  chi_square_results$P_Adjusted_BH,
-  digits = 4,
-  eps = 0.0001
+chi_square_results_display <- format_results(
+  chi_square_results,
+  c(
+    "Statistic",
+    "Minimum_Expected_Count",
+    "Cramers_V"
+  )
 )
 
 
 hypothesis_test_summary_display <-
   hypothesis_test_summary
 
-hypothesis_test_summary_display$P_Value <- format.pval(
-  hypothesis_test_summary$P_Value,
-  digits = 4,
-  eps = 0.0001
-)
+hypothesis_test_summary_display$P_Value <-
+  format.pval(
+    hypothesis_test_summary$P_Value,
+    digits = 4,
+    eps = 0.0001
+  )
 
-hypothesis_test_summary_display$P_Adjusted_BH <- format.pval(
-  hypothesis_test_summary$P_Adjusted_BH,
-  digits = 4,
-  eps = 0.0001
+hypothesis_test_summary_display$P_Adjusted_BH <-
+  format.pval(
+    hypothesis_test_summary$P_Adjusted_BH,
+    digits = 4,
+    eps = 0.0001
+  )
+
+
+# ============================================================
+# 11. Consolidate hypothesis-testing results
+# ============================================================
+
+hypothesis_testing <- list(
+  
+  Significance_Level =
+    alpha,
+  
+  Welch_Tests =
+    t_test_results,
+  
+  Wilcoxon_Tests =
+    wilcoxon_results,
+  
+  Categorical_Tests =
+    chi_square_results,
+  
+  Primary_Test_Summary =
+    hypothesis_test_summary
 )
 
 
 # ============================================================
-# 13. Display final results
+# 12. Display inferential results
 # ============================================================
 
-t_test_results_display
+cat(
+  "\n",
+  "============================================================\n",
+  "HYPOTHESIS TESTING\n",
+  "============================================================\n",
+  sep = ""
+)
 
-wilcoxon_results_display
+cat(
+  "\nWELCH T-TESTS\n"
+)
 
-chi_square_results_display
+print(
+  t_test_results_display
+)
 
-hypothesis_test_summary_display
+cat(
+  "\nWILCOXON RANK-SUM TESTS\n"
+)
+
+print(
+  wilcoxon_results_display
+)
+
+cat(
+  "\nCATEGORICAL ASSOCIATION TESTS\n"
+)
+
+print(
+  chi_square_results_display
+)
+
+cat(
+  "\nPRIMARY MULTIPLE-TESTING-ADJUSTED SUMMARY\n"
+)
+
+print(
+  hypothesis_test_summary_display
+)
+
+
+# ============================================================
+# 13. Final interpretation note
+# ============================================================
+
+cat(
+  "\nINTERPRETATION NOTE\n",
+  "Benjamini-Hochberg-adjusted p-values provide the primary ",
+  "group-level inferential evidence.\n",
+  "Statistical significance does not establish causality or ",
+  "clinical importance.\n",
+  "Cramer's V describes categorical association magnitude.\n",
+  sep = ""
+)
+
+
+# ============================================================
+# 14. Return complete hypothesis-testing object
+# ============================================================
+
+hypothesis_testing
 
