@@ -1,9 +1,8 @@
 # ============================================================
-# Project: Heart Failure Clinical Statistical Analysis with R
+# Project: Digital Patient Representation for
+#          Healthcare Decision-Making: Heart Failure
 # File: 01_data_import_and_setup.R
-# Purpose: Import the clinical dataset, inspect its structure,
-# and configure variables for statistical analysis.
-# Language: R
+# Purpose: Import and configure the dataset for analysis.
 # ============================================================
 
 
@@ -12,69 +11,74 @@
 # ============================================================
 
 heart_failure <- read.csv(
-  "data/heart_failure_clinical_records_dataset.csv"
+  "data/heart_failure_clinical_records_dataset.csv",
+  stringsAsFactors = FALSE
 )
-
-
-# ============================================================
-# 2. Inspect raw dataset structure
-# Review observations, variables, and imported data types.
-# ============================================================
 
 str(heart_failure)
 
 
 # ============================================================
-# 3. Configure numerical variables
-# Continuous and quantitative variables are stored as numeric.
+# 2. Define reusable variable groups
 # ============================================================
 
-heart_failure$age <- as.numeric(heart_failure$age)
-
-heart_failure$creatinine_phosphokinase <- as.numeric(
-  heart_failure$creatinine_phosphokinase
+baseline_numerical_variables <- c(
+  "age",
+  "creatinine_phosphokinase",
+  "ejection_fraction",
+  "platelets",
+  "serum_creatinine",
+  "serum_sodium"
 )
 
-heart_failure$ejection_fraction <- as.numeric(
-  heart_failure$ejection_fraction
+yes_no_variables <- c(
+  "anaemia",
+  "diabetes",
+  "high_blood_pressure",
+  "smoking"
 )
 
-heart_failure$platelets <- as.numeric(
-  heart_failure$platelets
+baseline_categorical_variables <- c(
+  yes_no_variables,
+  "sex"
 )
 
-heart_failure$serum_creatinine <- as.numeric(
-  heart_failure$serum_creatinine
+follow_up_variable <- "time"
+outcome_variable <- "DEATH_EVENT"
+
+baseline_variables <- c(
+  baseline_numerical_variables,
+  baseline_categorical_variables
 )
 
-heart_failure$serum_sodium <- as.numeric(
-  heart_failure$serum_sodium
+numerical_variables <- c(
+  baseline_numerical_variables,
+  follow_up_variable
 )
 
-heart_failure$time <- as.numeric(
-  heart_failure$time
+categorical_variables <- c(
+  baseline_categorical_variables,
+  outcome_variable
+)
+
+
+# ============================================================
+# 3. Configure numerical variables
+# ============================================================
+
+heart_failure[numerical_variables] <- lapply(
+  heart_failure[numerical_variables],
+  as.numeric
 )
 
 
 # ============================================================
 # 4. Configure categorical variables
-# Binary variables are converted to factors with descriptive labels.
 # ============================================================
 
-heart_failure$anaemia <- factor(
-  heart_failure$anaemia,
-  levels = c(0, 1),
-  labels = c("No", "Yes")
-)
-
-heart_failure$diabetes <- factor(
-  heart_failure$diabetes,
-  levels = c(0, 1),
-  labels = c("No", "Yes")
-)
-
-heart_failure$high_blood_pressure <- factor(
-  heart_failure$high_blood_pressure,
+heart_failure[yes_no_variables] <- lapply(
+  heart_failure[yes_no_variables],
+  factor,
   levels = c(0, 1),
   labels = c("No", "Yes")
 )
@@ -85,12 +89,6 @@ heart_failure$sex <- factor(
   labels = c("Female", "Male")
 )
 
-heart_failure$smoking <- factor(
-  heart_failure$smoking,
-  levels = c(0, 1),
-  labels = c("No", "Yes")
-)
-
 heart_failure$DEATH_EVENT <- factor(
   heart_failure$DEATH_EVENT,
   levels = c(0, 1),
@@ -99,9 +97,8 @@ heart_failure$DEATH_EVENT <- factor(
 
 
 # ============================================================
-# 5. Inspect configured dataset structure
-# Confirm that numerical and categorical variables were
-# assigned the intended data types.
+# 5. Inspect configured dataset
 # ============================================================
 
 str(heart_failure)
+
