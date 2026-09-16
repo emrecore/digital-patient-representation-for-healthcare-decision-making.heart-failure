@@ -1,367 +1,237 @@
 # ============================================================
-# Project: Heart Failure Clinical Statistical Analysis with R
+# Project: Digital Patient Representation for
+#          Healthcare Decision-Making: Heart Failure
 # File: 09_representation_sensitivity_analysis.R
-# Purpose: Examine how statistical conclusions and patient-level
-# estimates change when the amount or structure of digitally
-# represented patient information is modified.
-# Language: R
+# Purpose: Evaluate how statistical model outputs change when
+#          the digital patient representation is modified.
 # ============================================================
 
 
 # ============================================================
-# 1. Define analytical outcome
-# Convert the mortality factor into a numerical 0/1 outcome for
-# model diagnostics such as the Brier score.
-#
-# The original DEATH_EVENT factor remains unchanged.
+# 1. Confirm required objects
 # ============================================================
 
-mortality_numeric <- ifelse(
-  heart_failure$DEATH_EVENT == "Death event",
-  1,
-  0
+required_objects <- c(
+  "heart_failure",
+  "baseline_variables",
+  "outcome_variable"
 )
 
-
-# ============================================================
-# 2. Define increasingly informative patient representations
-# Patient information is divided into four nested layers.
-#
-# Each successive layer adds additional digitally available
-# information about the patient.
-#
-# Follow-up time is deliberately excluded because it represents
-# observation duration rather than baseline patient information.
-# ============================================================
-
-representation_layer_1 <- c(
-  "age",
-  "sex"
-)
-
-representation_layer_2 <- c(
-  representation_layer_1,
-  "anaemia",
-  "diabetes",
-  "high_blood_pressure",
-  "smoking"
-)
-
-representation_layer_3 <- c(
-  representation_layer_2,
-  "ejection_fraction",
-  "serum_creatinine",
-  "serum_sodium"
-)
-
-representation_layer_4 <- c(
-  representation_layer_3,
-  "creatinine_phosphokinase",
-  "platelets"
-)
-
-
-# ============================================================
-# 3. Create representation-layer overview
-# Document which patient-information dimensions are introduced
-# at each stage of the sensitivity analysis.
-# ============================================================
-
-representation_layer_overview <- data.frame(
-  
-  Representation = c(
-    "Layer 1",
-    "Layer 2",
-    "Layer 3",
-    "Layer 4"
-  ),
-  
-  Description = c(
-    "Basic demographic representation",
-    "Demographics, comorbidities, and risk factors",
-    "Expanded clinical and laboratory representation",
-    "Full available baseline representation"
-  ),
-  
-  Number_of_Variables = c(
-    length(
-      representation_layer_1
-    ),
-    length(
-      representation_layer_2
-    ),
-    length(
-      representation_layer_3
-    ),
-    length(
-      representation_layer_4
-    )
-  ),
-  
-  Variables = c(
-    paste(
-      representation_layer_1,
-      collapse = ", "
-    ),
-    paste(
-      representation_layer_2,
-      collapse = ", "
-    ),
-    paste(
-      representation_layer_3,
-      collapse = ", "
-    ),
-    paste(
-      representation_layer_4,
-      collapse = ", "
-    )
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-representation_layer_overview
-
-
-# ============================================================
-# 4. Confirm that required variables are available
-# Verify that every variable required for the representation
-# sensitivity analysis exists in the configured dataset.
-# ============================================================
-
-required_representation_variables <- unique(
-  c(
-    representation_layer_4,
-    "DEATH_EVENT"
+missing_objects <- required_objects[
+  !vapply(
+    required_objects,
+    exists,
+    logical(1),
+    inherits = TRUE
   )
-)
+]
 
-missing_representation_variables <- setdiff(
-  required_representation_variables,
-  names(heart_failure)
-)
-
-missing_representation_variables
-
-if (
-  length(
-    missing_representation_variables
-  ) > 0
-) {
-  
+if (length(missing_objects) > 0) {
   stop(
     paste(
-      "The following variables required for the representation",
-      "sensitivity analysis are missing:",
-      paste(
-        missing_representation_variables,
-        collapse = ", "
-      )
+      "Run 01_data_import_and_setup.R first. Missing objects:",
+      paste(missing_objects, collapse = ", ")
     )
   )
 }
 
 
 # ============================================================
-# 5. Fit Layer 1 mortality model
-# Estimate mortality using only basic demographic patient
-# information.
+# 2. Define nested patient-representation layers
+# Each layer contains all information from the previous layer
+# plus additional patient-information domains.
 # ============================================================
 
-representation_model_1 <- glm(
-  reformulate(
-    representation_layer_1,
-    response = "DEATH_EVENT"
+representation_layers <- list(
+  
+  Layer_1 = c(
+    "age",
+    "sex"
   ),
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
+  
+  Layer_2 = c(
+    "age",
+    "sex",
+    "anaemia",
+    "diabetes",
+    "high_blood_pressure",
+    "smoking"
+  ),
+  
+  Layer_3 = c(
+    "age",
+    "sex",
+    "anaemia",
+    "diabetes",
+    "high_blood_pressure",
+    "smoking",
+    "ejection_fraction",
+    "serum_creatinine",
+    "serum_sodium"
+  ),
+  
+  Layer_4 = c(
+    "age",
+    "sex",
+    "anaemia",
+    "diabetes",
+    "high_blood_pressure",
+    "smoking",
+    "ejection_fraction",
+    "serum_creatinine",
+    "serum_sodium",
+    "creatinine_phosphokinase",
+    "platelets"
   )
 )
 
-summary(
-  representation_model_1
-)
-
-
-# ============================================================
-# 6. Fit Layer 2 mortality model
-# Add digitally represented comorbidities and behavioral risk
-# information to the demographic representation.
-# ============================================================
-
-representation_model_2 <- glm(
-  reformulate(
-    representation_layer_2,
-    response = "DEATH_EVENT"
-  ),
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
+if (!identical(
+  sort(representation_layers$Layer_4),
+  sort(baseline_variables)
+)) {
+  stop(
+    "Layer 4 does not match the full available baseline representation."
   )
-)
-
-summary(
-  representation_model_2
-)
+}
 
 
-# ============================================================
-# 7. Fit Layer 3 mortality model
-# Add selected cardiac, renal, and biochemical information to
-# create a clinically richer digital patient representation.
-# ============================================================
-
-representation_model_3 <- glm(
-  reformulate(
-    representation_layer_3,
-    response = "DEATH_EVENT"
+representation_layer_overview <- data.frame(
+  
+  Layer = names(
+    representation_layers
   ),
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
-  )
-)
-
-summary(
-  representation_model_3
-)
-
-
-# ============================================================
-# 8. Fit Layer 4 mortality model
-# Use all available baseline patient characteristics.
-#
-# This model reproduces the complete baseline representation
-# used in the multivariable regression stage.
-# ============================================================
-
-representation_model_4 <- glm(
-  reformulate(
-    representation_layer_4,
-    response = "DEATH_EVENT"
+  
+  Number_of_Variables = vapply(
+    representation_layers,
+    length,
+    numeric(1)
   ),
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
+  
+  Variables = vapply(
+    representation_layers,
+    paste,
+    collapse = ", ",
+    FUN.VALUE = character(1)
+  ),
+  
+  stringsAsFactors = FALSE
+)
+
+
+# ============================================================
+# 3. Create common analytical sample
+# All representation models use the same patients so that model
+# differences reflect information changes rather than changes
+# in the analyzed sample.
+# ============================================================
+
+representation_data <- heart_failure[
+  complete.cases(
+    heart_failure[
+      c(
+        baseline_variables,
+        outcome_variable
+      )
+    ]
+  ),
+  ,
+  drop = FALSE
+]
+
+mortality_numeric <- as.integer(
+  representation_data[[outcome_variable]]
+) - 1
+
+
+# ============================================================
+# 4. Fit representation models
+# ============================================================
+
+representation_models <- lapply(
+  representation_layers,
+  function(variables) {
+    
+    glm(
+      reformulate(
+        variables,
+        response = outcome_variable
+      ),
+      data = representation_data,
+      family = binomial()
+    )
+  }
+)
+
+if (any(
+  !vapply(
+    representation_models,
+    function(model) model$converged,
+    logical(1)
   )
-)
-
-summary(
-  representation_model_4
-)
+)) {
+  warning(
+    "At least one representation model did not converge."
+  )
+}
 
 
 # ============================================================
-# 9. Store representation models
-# Combine the four nested models into one structured object for
-# subsequent comparison.
+# 5. Define model-evaluation helper
+# Measures describe in-sample model behavior only.
 # ============================================================
 
-representation_models <- list(
-  
-  Layer_1_Demographics =
-    representation_model_1,
-  
-  Layer_2_Comorbidities =
-    representation_model_2,
-  
-  Layer_3_Clinical =
-    representation_model_3,
-  
-  Layer_4_Full =
-    representation_model_4
+representation_null_model <- glm(
+  reformulate(
+    character(0),
+    response = outcome_variable
+  ),
+  data = representation_data,
+  family = binomial()
 )
 
 
-# ============================================================
-# 10. Define model-evaluation function
-# Calculate descriptive model-fit and probability-based
-# statistics for each representation layer.
-#
-# AIC:
-# Lower values indicate better relative fit after accounting
-# for model complexity.
-#
-# McFadden pseudo-R2:
-# Describes improvement relative to an intercept-only model.
-#
-# Brier score:
-# Mean squared difference between predicted probabilities and
-# observed binary outcomes. Lower values indicate smaller
-# probability error within the analyzed sample.
-#
-# These are in-sample diagnostics and must not be interpreted
-# as externally validated predictive performance.
-# ============================================================
-
-evaluate_representation_model <- function(
-    model,
-    model_name,
-    number_of_variables
-) {
+evaluate_model <- function(model) {
   
-  predicted_probability <- predict(
+  probabilities <- predict(
     model,
     type = "response"
   )
   
-  null_model <- glm(
-    DEATH_EVENT ~ 1,
-    data = heart_failure,
-    family = binomial(
-      link = "logit"
-    )
-  )
-  
-  mcfadden_r2 <- 1 -
-    (
-      as.numeric(
-        logLik(
-          model
-        )
-      ) /
-        as.numeric(
-          logLik(
-            null_model
-          )
-        )
-    )
-  
-  brier_score <- mean(
-    (
-      predicted_probability -
-        mortality_numeric
-    )^2
-  )
-  
   data.frame(
     
-    Representation =
-      model_name,
+    N =
+      nobs(model),
     
-    Number_of_Variables =
-      number_of_variables,
+    Predictor_Parameters =
+      length(coef(model)) - 1,
     
-    AIC = AIC(
-      model
-    ),
+    AIC =
+      AIC(model),
     
     Residual_Deviance =
-      deviance(
-        model
-      ),
+      model$deviance,
     
     McFadden_Pseudo_R2 =
-      mcfadden_r2,
+      1 -
+      (
+        as.numeric(logLik(model)) /
+          as.numeric(
+            logLik(
+              representation_null_model
+            )
+          )
+      ),
     
     Brier_Score =
-      brier_score,
-    
-    Mean_Predicted_Probability =
       mean(
-        predicted_probability
+        (
+          probabilities -
+            mortality_numeric
+        )^2
       ),
+    
+    Converged =
+      model$converged,
     
     stringsAsFactors = FALSE
   )
@@ -369,1299 +239,588 @@ evaluate_representation_model <- function(
 
 
 # ============================================================
-# 11. Compare model diagnostics across representations
-# Evaluate how model characteristics change as additional
-# patient information becomes digitally available.
+# 6. Compare representation-model fit
 # ============================================================
 
-representation_model_comparison <- rbind(
-  
-  evaluate_representation_model(
-    representation_model_1,
-    "Layer 1",
-    length(
-      representation_layer_1
-    )
-  ),
-  
-  evaluate_representation_model(
-    representation_model_2,
-    "Layer 2",
-    length(
-      representation_layer_2
-    )
-  ),
-  
-  evaluate_representation_model(
-    representation_model_3,
-    "Layer 3",
-    length(
-      representation_layer_3
-    )
-  ),
-  
-  evaluate_representation_model(
-    representation_model_4,
-    "Layer 4",
-    length(
-      representation_layer_4
-    )
+representation_model_comparison <- do.call(
+  rbind,
+  lapply(
+    names(representation_models),
+    function(layer) {
+      
+      data.frame(
+        Layer = layer,
+        Variables = length(
+          representation_layers[[layer]]
+        ),
+        evaluate_model(
+          representation_models[[layer]]
+        ),
+        stringsAsFactors = FALSE
+      )
+    }
   )
-)
-
-representation_model_comparison[
-  ,
-  c(
-    "AIC",
-    "Residual_Deviance",
-    "McFadden_Pseudo_R2",
-    "Brier_Score",
-    "Mean_Predicted_Probability"
-  )
-] <- round(
-  representation_model_comparison[
-    ,
-    c(
-      "AIC",
-      "Residual_Deviance",
-      "McFadden_Pseudo_R2",
-      "Brier_Score",
-      "Mean_Predicted_Probability"
-    )
-  ],
-  4
 )
 
 row.names(
   representation_model_comparison
 ) <- NULL
 
-representation_model_comparison
-
 
 # ============================================================
-# 12. Calculate changes in model diagnostics
-# Quantify how much each additional representation layer
-# changes AIC, pseudo-R2, and Brier score.
-#
-# Positive AIC improvement represents a reduction in AIC.
-# Positive Brier improvement represents a reduction in
-# probability error.
+# 7. Compare sequential information additions
+# Nested likelihood-ratio tests examine whether each additional
+# representation layer improves statistical model fit.
 # ============================================================
 
-representation_model_changes <-
-  representation_model_comparison
+layer_pairs <- list(
+  c("Layer_1", "Layer_2"),
+  c("Layer_2", "Layer_3"),
+  c("Layer_3", "Layer_4")
+)
 
-representation_model_changes$AIC_Improvement <-
-  c(
-    NA,
-    head(
-      representation_model_comparison$AIC,
-      -1
-    ) -
-      tail(
-        representation_model_comparison$AIC,
-        -1
+
+sequential_representation_tests <- do.call(
+  rbind,
+  lapply(
+    layer_pairs,
+    function(pair) {
+      
+      reduced_layer <- pair[1]
+      expanded_layer <- pair[2]
+      
+      test <- anova(
+        representation_models[[reduced_layer]],
+        representation_models[[expanded_layer]],
+        test = "LRT"
       )
-  )
-
-representation_model_changes$Pseudo_R2_Change <-
-  c(
-    NA,
-    diff(
-      representation_model_comparison$McFadden_Pseudo_R2
-    )
-  )
-
-representation_model_changes$Brier_Improvement <-
-  c(
-    NA,
-    head(
-      representation_model_comparison$Brier_Score,
-      -1
-    ) -
-      tail(
-        representation_model_comparison$Brier_Score,
-        -1
+      
+      data.frame(
+        
+        Comparison = paste(
+          reduced_layer,
+          "->",
+          expanded_layer
+        ),
+        
+        Added_Variables = paste(
+          setdiff(
+            representation_layers[[expanded_layer]],
+            representation_layers[[reduced_layer]]
+          ),
+          collapse = ", "
+        ),
+        
+        Degrees_of_Freedom =
+          test$Df[2],
+        
+        Deviance_Change =
+          test$Deviance[2],
+        
+        P_Value =
+          test$`Pr(>Chi)`[2],
+        
+        stringsAsFactors = FALSE
       )
+    }
   )
-
-representation_model_changes[
-  ,
-  c(
-    "AIC_Improvement",
-    "Pseudo_R2_Change",
-    "Brier_Improvement"
-  )
-] <- round(
-  representation_model_changes[
-    ,
-    c(
-      "AIC_Improvement",
-      "Pseudo_R2_Change",
-      "Brier_Improvement"
-    )
-  ],
-  4
 )
 
-representation_model_changes
+row.names(
+  sequential_representation_tests
+) <- NULL
 
 
 # ============================================================
-# 13. Perform sequential likelihood-ratio comparisons
-# Compare nested representation models to determine whether the
-# newly introduced information improves model fit relative to
-# the preceding representation.
-#
-# These tests evaluate statistical model fit only.
-# They do not establish clinical necessity or causal relevance
-# of the added information.
+# 8. Extract coefficients across representation layers
+# This allows associations to be compared as additional patient
+# information becomes available.
 # ============================================================
 
-layer_1_vs_2_test <- anova(
-  representation_model_1,
-  representation_model_2,
-  test = "Chisq"
-)
-
-layer_2_vs_3_test <- anova(
-  representation_model_2,
-  representation_model_3,
-  test = "Chisq"
-)
-
-layer_3_vs_4_test <- anova(
-  representation_model_3,
-  representation_model_4,
-  test = "Chisq"
-)
-
-layer_1_vs_2_test
-
-layer_2_vs_3_test
-
-layer_3_vs_4_test
-
-
-# ============================================================
-# 14. Create sequential model-comparison summary
-# Extract the principal likelihood-ratio statistics into one
-# interpretable table.
-# ============================================================
-
-sequential_model_comparison <- data.frame(
-  
-  Comparison = c(
-    "Layer 1 vs Layer 2",
-    "Layer 2 vs Layer 3",
-    "Layer 3 vs Layer 4"
-  ),
-  
-  Added_Information = c(
-    "Comorbidities and risk factors",
-    "Cardiac, renal, and biochemical information",
-    "Additional laboratory information"
-  ),
-  
-  Degrees_of_Freedom = c(
-    layer_1_vs_2_test$Df[2],
-    layer_2_vs_3_test$Df[2],
-    layer_3_vs_4_test$Df[2]
-  ),
-  
-  Deviance_Change = c(
-    layer_1_vs_2_test$Deviance[2],
-    layer_2_vs_3_test$Deviance[2],
-    layer_3_vs_4_test$Deviance[2]
-  ),
-  
-  P_Value = c(
-    layer_1_vs_2_test[
-      ["Pr(>Chi)"]
-    ][2],
-    
-    layer_2_vs_3_test[
-      ["Pr(>Chi)"]
-    ][2],
-    
-    layer_3_vs_4_test[
-      ["Pr(>Chi)"]
-    ][2]
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-sequential_model_comparison[
-  ,
-  c(
-    "Deviance_Change",
-    "P_Value"
-  )
-] <- round(
-  sequential_model_comparison[
-    ,
-    c(
-      "Deviance_Change",
-      "P_Value"
-    )
-  ],
-  4
-)
-
-sequential_model_comparison
-
-
-# ============================================================
-# 15. Extract coefficient estimates across representations
-# Examine whether the estimated associations of patient
-# characteristics change as additional patient information is
-# added to the model.
-#
-# This allows model dependence of individual associations to
-# be evaluated explicitly.
-# ============================================================
-
-extract_representation_coefficients <- function(
-    model,
-    representation_name
-) {
-  
-  coefficient_table <- summary(
-    model
-  )$coefficients
-  
-  coefficient_table <- coefficient_table[
-    row.names(
-      coefficient_table
-    ) != "(Intercept)",
-    ,
-    drop = FALSE
-  ]
-  
-  data.frame(
-    
-    Representation =
-      representation_name,
-    
-    Term =
-      row.names(
-        coefficient_table
-      ),
-    
-    Coefficient =
-      coefficient_table[
+representation_coefficient_summary <- do.call(
+  rbind,
+  lapply(
+    names(representation_models),
+    function(layer) {
+      
+      coefficients <- summary(
+        representation_models[[layer]]
+      )$coefficients
+      
+      coefficients <- coefficients[
+        row.names(coefficients) != "(Intercept)",
         ,
-        "Estimate"
-      ],
-    
-    Standard_Error =
-      coefficient_table[
-        ,
-        "Std. Error"
-      ],
-    
-    Odds_Ratio = exp(
-      coefficient_table[
-        ,
-        "Estimate"
+        drop = FALSE
       ]
-    ),
-    
-    CI_Lower = exp(
-      coefficient_table[
-        ,
-        "Estimate"
-      ] -
-        1.96 *
-        coefficient_table[
-          ,
-          "Std. Error"
-        ]
-    ),
-    
-    CI_Upper = exp(
-      coefficient_table[
-        ,
-        "Estimate"
-      ] +
-        1.96 *
-        coefficient_table[
-          ,
-          "Std. Error"
-        ]
-    ),
-    
-    P_Value =
-      coefficient_table[
-        ,
-        "Pr(>|z|)"
-      ],
-    
-    stringsAsFactors = FALSE
+      
+      data.frame(
+        Layer = layer,
+        Term = row.names(coefficients),
+        Coefficient = coefficients[, "Estimate"],
+        Odds_Ratio = exp(
+          coefficients[, "Estimate"]
+        ),
+        stringsAsFactors = FALSE
+      )
+    }
   )
-}
-
-
-# ============================================================
-# 16. Build coefficient-stability table
-# Combine estimates from all four representation layers.
-# ============================================================
-
-representation_coefficient_summary <- rbind(
-  
-  extract_representation_coefficients(
-    representation_model_1,
-    "Layer 1"
-  ),
-  
-  extract_representation_coefficients(
-    representation_model_2,
-    "Layer 2"
-  ),
-  
-  extract_representation_coefficients(
-    representation_model_3,
-    "Layer 3"
-  ),
-  
-  extract_representation_coefficients(
-    representation_model_4,
-    "Layer 4"
-  )
-)
-
-representation_coefficient_summary[
-  ,
-  c(
-    "Coefficient",
-    "Standard_Error",
-    "Odds_Ratio",
-    "CI_Lower",
-    "CI_Upper",
-    "P_Value"
-  )
-] <- round(
-  representation_coefficient_summary[
-    ,
-    c(
-      "Coefficient",
-      "Standard_Error",
-      "Odds_Ratio",
-      "CI_Lower",
-      "CI_Upper",
-      "P_Value"
-    )
-  ],
-  4
 )
 
 row.names(
   representation_coefficient_summary
 ) <- NULL
 
-representation_coefficient_summary
-
 
 # ============================================================
-# 17. Compare age association across all representations
-# Age is available in every representation layer and therefore
-# provides a direct example of how an estimated association may
-# change as additional patient information becomes available.
+# 9. Summarize coefficient stability
+# Only terms appearing in at least two representation models
+# are included.
 # ============================================================
 
-age_coefficient_stability <-
-  representation_coefficient_summary[
-    representation_coefficient_summary$Term ==
-      "age",
-    ,
-    drop = FALSE
-  ]
-
-row.names(
-  age_coefficient_stability
-) <- NULL
-
-age_coefficient_stability
-
-
-# ============================================================
-# 18. Compare sex association across all representations
-# Sex is also represented in every layer and can therefore be
-# examined for coefficient stability across progressively richer
-# digital patient representations.
-# ============================================================
-
-sex_coefficient_stability <-
-  representation_coefficient_summary[
-    grepl(
-      "^sex",
+coefficient_stability_summary <- do.call(
+  rbind,
+  lapply(
+    unique(
       representation_coefficient_summary$Term
     ),
-    ,
-    drop = FALSE
-  ]
+    function(term) {
+      
+      results <- representation_coefficient_summary[
+        representation_coefficient_summary$Term ==
+          term,
+        ,
+        drop = FALSE
+      ]
+      
+      if (nrow(results) < 2) {
+        return(NULL)
+      }
+      
+      data.frame(
+        Term = term,
+        Models = nrow(results),
+        Minimum_Coefficient =
+          min(results$Coefficient),
+        Maximum_Coefficient =
+          max(results$Coefficient),
+        Coefficient_Range =
+          max(results$Coefficient) -
+          min(results$Coefficient),
+        Minimum_Odds_Ratio =
+          min(results$Odds_Ratio),
+        Maximum_Odds_Ratio =
+          max(results$Odds_Ratio),
+        stringsAsFactors = FALSE
+      )
+    }
+  )
+)
 
 row.names(
-  sex_coefficient_stability
+  coefficient_stability_summary
 ) <- NULL
 
-sex_coefficient_stability
-
 
 # ============================================================
-# 19. Calculate patient-level predicted probabilities
-# Estimate mortality probabilities for every patient under each
-# digital representation.
-#
-# These probabilities are analytical model outputs only.
-# They are not clinically validated patient-risk estimates.
+# 10. Generate patient-level probabilities
 # ============================================================
 
-representation_predictions <- data.frame(
+representation_probabilities <- data.frame(
+  Observation = row.names(
+    representation_data
+  ),
+  check.names = FALSE
+)
+
+for (layer in names(representation_models)) {
   
-  Patient_ID =
-    seq_len(
-      nrow(
-        heart_failure
+  representation_probabilities[[layer]] <-
+    predict(
+      representation_models[[layer]],
+      type = "response"
+    )
+}
+
+
+# ============================================================
+# 11. Evaluate probability sensitivity
+# Reduced representations are compared with Layer 4, the full
+# available baseline representation.
+# ============================================================
+
+prediction_sensitivity_summary <- do.call(
+  rbind,
+  lapply(
+    names(representation_layers)[1:3],
+    function(layer) {
+      
+      reduced_probability <-
+        representation_probabilities[[layer]]
+      
+      full_probability <-
+        representation_probabilities$Layer_4
+      
+      difference <-
+        reduced_probability -
+        full_probability
+      
+      data.frame(
+        Comparison = paste(
+          layer,
+          "vs Layer_4"
+        ),
+        
+        Mean_Absolute_Difference =
+          mean(abs(difference)),
+        
+        RMSE =
+          sqrt(
+            mean(
+              difference^2
+            )
+          ),
+        
+        Maximum_Absolute_Difference =
+          max(
+            abs(difference)
+          ),
+        
+        Spearman_Correlation =
+          cor(
+            reduced_probability,
+            full_probability,
+            method = "spearman"
+          ),
+        
+        stringsAsFactors = FALSE
       )
-    ),
-  
-  Observed_Outcome =
-    heart_failure$DEATH_EVENT,
-  
-  Layer_1_Probability = predict(
-    representation_model_1,
-    type = "response"
-  ),
-  
-  Layer_2_Probability = predict(
-    representation_model_2,
-    type = "response"
-  ),
-  
-  Layer_3_Probability = predict(
-    representation_model_3,
-    type = "response"
-  ),
-  
-  Layer_4_Probability = predict(
-    representation_model_4,
-    type = "response"
+    }
   )
 )
-
-representation_predictions[
-  ,
-  c(
-    "Layer_1_Probability",
-    "Layer_2_Probability",
-    "Layer_3_Probability",
-    "Layer_4_Probability"
-  )
-] <- round(
-  representation_predictions[
-    ,
-    c(
-      "Layer_1_Probability",
-      "Layer_2_Probability",
-      "Layer_3_Probability",
-      "Layer_4_Probability"
-    )
-  ],
-  4
-)
-
-head(
-  representation_predictions
-)
-
-
-# ============================================================
-# 20. Measure patient-level information sensitivity
-# Compare probabilities from reduced patient representations
-# with probabilities from the full available baseline model.
-#
-# Mean absolute probability difference describes the average
-# change in patient-level model output caused by information
-# reduction.
-# ============================================================
-
-full_representation_probability <- predict(
-  representation_model_4,
-  type = "response"
-)
-
-prediction_sensitivity_summary <- data.frame(
-  
-  Representation = c(
-    "Layer 1",
-    "Layer 2",
-    "Layer 3"
-  ),
-  
-  Mean_Absolute_Probability_Difference = c(
-    
-    mean(
-      abs(
-        predict(
-          representation_model_1,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    ),
-    
-    mean(
-      abs(
-        predict(
-          representation_model_2,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    ),
-    
-    mean(
-      abs(
-        predict(
-          representation_model_3,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    )
-  ),
-  
-  Root_Mean_Squared_Probability_Difference = c(
-    
-    sqrt(
-      mean(
-        (
-          predict(
-            representation_model_1,
-            type = "response"
-          ) -
-            full_representation_probability
-        )^2
-      )
-    ),
-    
-    sqrt(
-      mean(
-        (
-          predict(
-            representation_model_2,
-            type = "response"
-          ) -
-            full_representation_probability
-        )^2
-      )
-    ),
-    
-    sqrt(
-      mean(
-        (
-          predict(
-            representation_model_3,
-            type = "response"
-          ) -
-            full_representation_probability
-        )^2
-      )
-    )
-  ),
-  
-  Maximum_Absolute_Probability_Difference = c(
-    
-    max(
-      abs(
-        predict(
-          representation_model_1,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    ),
-    
-    max(
-      abs(
-        predict(
-          representation_model_2,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    ),
-    
-    max(
-      abs(
-        predict(
-          representation_model_3,
-          type = "response"
-        ) -
-          full_representation_probability
-      )
-    )
-  ),
-  
-  Probability_Correlation_With_Full_Model = c(
-    
-    cor(
-      predict(
-        representation_model_1,
-        type = "response"
-      ),
-      full_representation_probability,
-      method = "spearman"
-    ),
-    
-    cor(
-      predict(
-        representation_model_2,
-        type = "response"
-      ),
-      full_representation_probability,
-      method = "spearman"
-    ),
-    
-    cor(
-      predict(
-        representation_model_3,
-        type = "response"
-      ),
-      full_representation_probability,
-      method = "spearman"
-    )
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-prediction_sensitivity_summary[
-  ,
-  -1
-] <- round(
-  prediction_sensitivity_summary[
-    ,
-    -1
-  ],
-  4
-)
-
-prediction_sensitivity_summary
-
-
-# ============================================================
-# 21. Define an illustrative probability threshold
-# Use 0.50 only as a methodological example to examine whether
-# reduced patient information can change a binary model output.
-#
-# This threshold is NOT a clinical treatment threshold,
-# triage rule, or validated decision threshold.
-# ============================================================
-
-illustrative_probability_threshold <- 0.50
-
-
-# ============================================================
-# 22. Calculate illustrative model classifications
-# Convert model probabilities into binary analytical categories
-# using the predefined illustrative threshold.
-# ============================================================
-
-layer_1_classification <- ifelse(
-  predict(
-    representation_model_1,
-    type = "response"
-  ) >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
-
-layer_2_classification <- ifelse(
-  predict(
-    representation_model_2,
-    type = "response"
-  ) >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
-
-layer_3_classification <- ifelse(
-  predict(
-    representation_model_3,
-    type = "response"
-  ) >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
-
-layer_4_classification <- ifelse(
-  predict(
-    representation_model_4,
-    type = "response"
-  ) >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
-
-
-# ============================================================
-# 23. Evaluate representation-based reclassification
-# Count how many patient-level model classifications differ
-# from those generated by the full available representation.
-#
-# This demonstrates how information reduction can alter a model
-# output even when the underlying patient has not changed.
-# ============================================================
-
-representation_reclassification_summary <- data.frame(
-  
-  Representation = c(
-    "Layer 1",
-    "Layer 2",
-    "Layer 3"
-  ),
-  
-  Different_from_Full_Model = c(
-    
-    sum(
-      layer_1_classification !=
-        layer_4_classification
-    ),
-    
-    sum(
-      layer_2_classification !=
-        layer_4_classification
-    ),
-    
-    sum(
-      layer_3_classification !=
-        layer_4_classification
-    )
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-representation_reclassification_summary$Percentage_Different <-
-  round(
-    (
-      representation_reclassification_summary$
-        Different_from_Full_Model /
-        nrow(
-          heart_failure
-        )
-    ) * 100,
-    2
-  )
-
-representation_reclassification_summary
-
-
-# ============================================================
-# 24. Identify individual reclassified patients
-# Document which patient-level analytical classifications change
-# when reduced representations are compared with the full model.
-# ============================================================
-
-patient_reclassification <- data.frame(
-  
-  Patient_ID =
-    seq_len(
-      nrow(
-        heart_failure
-      )
-    ),
-  
-  Layer_1 =
-    layer_1_classification,
-  
-  Layer_2 =
-    layer_2_classification,
-  
-  Layer_3 =
-    layer_3_classification,
-  
-  Layer_4_Full =
-    layer_4_classification,
-  
-  Layer_1_Changed =
-    layer_1_classification !=
-    layer_4_classification,
-  
-  Layer_2_Changed =
-    layer_2_classification !=
-    layer_4_classification,
-  
-  Layer_3_Changed =
-    layer_3_classification !=
-    layer_4_classification,
-  
-  stringsAsFactors = FALSE
-)
-
-reclassified_patients <-
-  patient_reclassification[
-    patient_reclassification$Layer_1_Changed |
-      patient_reclassification$Layer_2_Changed |
-      patient_reclassification$Layer_3_Changed,
-    ,
-    drop = FALSE
-  ]
 
 row.names(
-  reclassified_patients
+  prediction_sensitivity_summary
 ) <- NULL
-
-reclassified_patients
 
 
 # ============================================================
-# 25. Examine information loss through dichotomization
-# Create a deliberately simplified representation of ejection
-# fraction by converting the original continuous measurement
-# into two categories.
-#
+# 12. Illustrative reclassification
+# The 0.50 threshold is methodological only and has no clinical
+# interpretation.
+# ============================================================
+
+illustrative_threshold <- 0.50
+
+full_classification <-
+  representation_probabilities$Layer_4 >=
+  illustrative_threshold
+
+
+representation_reclassification_summary <- do.call(
+  rbind,
+  lapply(
+    names(representation_layers)[1:3],
+    function(layer) {
+      
+      reduced_classification <-
+        representation_probabilities[[layer]] >=
+        illustrative_threshold
+      
+      changed <-
+        reduced_classification !=
+        full_classification
+      
+      data.frame(
+        Comparison = paste(
+          layer,
+          "vs Layer_4"
+        ),
+        
+        Reclassified_N =
+          sum(changed),
+        
+        Reclassified_Percentage =
+          mean(changed) * 100,
+        
+        stringsAsFactors = FALSE
+      )
+    }
+  )
+)
+
+row.names(
+  representation_reclassification_summary
+) <- NULL
+
+
+# ============================================================
+# 13. Create dichotomized ejection-fraction representation
 # The sample median is used only as a neutral methodological
-# cutoff for demonstrating information loss.
-#
-# It is NOT interpreted as a clinical threshold.
+# cutoff and is not a clinical threshold.
 # ============================================================
 
-ejection_fraction_cutoff <- median(
-  heart_failure$ejection_fraction,
+dichotomization_cutoff <- median(
+  representation_data$ejection_fraction,
   na.rm = TRUE
 )
 
-ejection_fraction_cutoff
-
-
-# ============================================================
-# 26. Create dichotomized ejection-fraction representation
-# Preserve the original dataset and create a separate analytical
-# copy containing the simplified representation.
-# ============================================================
-
-heart_failure_dichotomized <- heart_failure
-
-heart_failure_dichotomized$ejection_fraction_group <- factor(
+representation_data$ejection_fraction_binary <- factor(
   ifelse(
-    heart_failure_dichotomized$ejection_fraction <=
-      ejection_fraction_cutoff,
-    "Lower or equal to median",
-    "Higher than median"
+    representation_data$ejection_fraction <=
+      dichotomization_cutoff,
+    "Lower_or_equal_median",
+    "Above_median"
   ),
   levels = c(
-    "Higher than median",
-    "Lower or equal to median"
-  )
-)
-
-table(
-  heart_failure_dichotomized$ejection_fraction_group
-)
-
-
-# ============================================================
-# 27. Fit continuous-information model
-# Use the complete available baseline representation while
-# retaining ejection fraction as a continuous variable.
-# ============================================================
-
-continuous_information_model <- glm(
-  DEATH_EVENT ~
-    age +
-    anaemia +
-    creatinine_phosphokinase +
-    diabetes +
-    ejection_fraction +
-    high_blood_pressure +
-    platelets +
-    serum_creatinine +
-    serum_sodium +
-    sex +
-    smoking,
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
+    "Lower_or_equal_median",
+    "Above_median"
   )
 )
 
 
-# ============================================================
-# 28. Fit dichotomized-information model
-# Replace continuous ejection fraction with the simplified
-# binary representation while keeping the remaining available
-# patient information unchanged.
-# ============================================================
+dichotomized_variables <- c(
+  setdiff(
+    representation_layers$Layer_4,
+    "ejection_fraction"
+  ),
+  "ejection_fraction_binary"
+)
 
-dichotomized_information_model <- glm(
-  DEATH_EVENT ~
-    age +
-    anaemia +
-    creatinine_phosphokinase +
-    diabetes +
-    ejection_fraction_group +
-    high_blood_pressure +
-    platelets +
-    serum_creatinine +
-    serum_sodium +
-    sex +
-    smoking,
-  data = heart_failure_dichotomized,
-  family = binomial(
-    link = "logit"
-  )
+
+dichotomized_model <- glm(
+  reformulate(
+    dichotomized_variables,
+    response = outcome_variable
+  ),
+  data = representation_data,
+  family = binomial()
 )
 
 
 # ============================================================
-# 29. Compare continuous and dichotomized representations
-# Evaluate whether simplification of one continuous patient
-# measurement changes overall model characteristics.
+# 14. Compare continuous and dichotomized representations
+# ============================================================
+
+dichotomization_model_comparison <- rbind(
+  
+  data.frame(
+    Representation =
+      "Continuous ejection fraction",
+    evaluate_model(
+      representation_models$Layer_4
+    )
+  ),
+  
+  data.frame(
+    Representation =
+      "Dichotomized ejection fraction",
+    evaluate_model(
+      dichotomized_model
+    )
+  )
+)
+
+row.names(
+  dichotomization_model_comparison
+) <- NULL
+
+
+# ============================================================
+# 15. Evaluate patient-level effects of dichotomization
 # ============================================================
 
 continuous_probability <- predict(
-  continuous_information_model,
+  representation_models$Layer_4,
   type = "response"
 )
 
 dichotomized_probability <- predict(
-  dichotomized_information_model,
+  dichotomized_model,
   type = "response"
 )
 
-continuous_brier_score <- mean(
-  (
-    continuous_probability -
-      mortality_numeric
-  )^2
-)
+dichotomization_difference <-
+  dichotomized_probability -
+  continuous_probability
 
-dichotomized_brier_score <- mean(
-  (
-    dichotomized_probability -
-      mortality_numeric
-  )^2
-)
-
-null_model <- glm(
-  DEATH_EVENT ~ 1,
-  data = heart_failure,
-  family = binomial(
-    link = "logit"
-  )
-)
-
-continuous_mcfadden_r2 <- 1 -
-  (
-    as.numeric(
-      logLik(
-        continuous_information_model
-      )
-    ) /
-      as.numeric(
-        logLik(
-          null_model
-        )
-      )
-  )
-
-dichotomized_mcfadden_r2 <- 1 -
-  (
-    as.numeric(
-      logLik(
-        dichotomized_information_model
-      )
-    ) /
-      as.numeric(
-        logLik(
-          null_model
-        )
-      )
-  )
-
-dichotomization_model_comparison <- data.frame(
-  
-  Representation = c(
-    "Continuous ejection fraction",
-    "Dichotomized ejection fraction"
-  ),
-  
-  AIC = c(
-    AIC(
-      continuous_information_model
-    ),
-    AIC(
-      dichotomized_information_model
-    )
-  ),
-  
-  Residual_Deviance = c(
-    deviance(
-      continuous_information_model
-    ),
-    deviance(
-      dichotomized_information_model
-    )
-  ),
-  
-  McFadden_Pseudo_R2 = c(
-    continuous_mcfadden_r2,
-    dichotomized_mcfadden_r2
-  ),
-  
-  Brier_Score = c(
-    continuous_brier_score,
-    dichotomized_brier_score
-  ),
-  
-  stringsAsFactors = FALSE
-)
-
-dichotomization_model_comparison[
-  ,
-  -1
-] <- round(
-  dichotomization_model_comparison[
-    ,
-    -1
-  ],
-  4
-)
-
-dichotomization_model_comparison
-
-
-# ============================================================
-# 30. Measure probability changes caused by dichotomization
-# Quantify how much patient-level model outputs change when a
-# continuous clinical measurement is reduced to two categories.
-# ============================================================
 
 dichotomization_probability_sensitivity <- data.frame(
   
-  Mean_Absolute_Probability_Difference =
+  Mean_Absolute_Difference =
     mean(
       abs(
-        continuous_probability -
-          dichotomized_probability
+        dichotomization_difference
       )
     ),
   
-  Root_Mean_Squared_Probability_Difference =
+  RMSE =
     sqrt(
       mean(
-        (
-          continuous_probability -
-            dichotomized_probability
-        )^2
+        dichotomization_difference^2
       )
     ),
   
-  Maximum_Absolute_Probability_Difference =
+  Maximum_Absolute_Difference =
     max(
       abs(
-        continuous_probability -
-          dichotomized_probability
+        dichotomization_difference
       )
     ),
   
-  Probability_Correlation =
+  Spearman_Correlation =
     cor(
-      continuous_probability,
       dichotomized_probability,
+      continuous_probability,
       method = "spearman"
     )
 )
 
-dichotomization_probability_sensitivity[] <- round(
-  dichotomization_probability_sensitivity,
-  4
-)
-
-dichotomization_probability_sensitivity
-
-
-# ============================================================
-# 31. Evaluate dichotomization-based reclassification
-# Apply the same illustrative threshold to determine whether
-# simplifying ejection fraction changes binary model output.
-#
-# Again, the threshold has no clinical meaning.
-# ============================================================
-
-continuous_classification <- ifelse(
-  continuous_probability >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
-
-dichotomized_classification <- ifelse(
-  dichotomized_probability >=
-    illustrative_probability_threshold,
-  "Higher model probability",
-  "Lower model probability"
-)
 
 dichotomization_reclassification <- data.frame(
   
-  Number_Reclassified = sum(
-    continuous_classification !=
-      dichotomized_classification
-  ),
+  Threshold =
+    illustrative_threshold,
   
-  Percentage_Reclassified = (
+  Reclassified_N =
     sum(
-      continuous_classification !=
-        dichotomized_classification
-    ) /
-      nrow(
-        heart_failure
-      )
-  ) * 100
-)
-
-dichotomization_reclassification[] <- round(
-  dichotomization_reclassification,
-  2
-)
-
-dichotomization_reclassification
-
-
-# ============================================================
-# 32. Create patient-level dichotomization comparison
-# Retain patient-level probability differences so individual
-# sensitivity to information simplification can be inspected.
-# ============================================================
-
-dichotomization_patient_comparison <- data.frame(
-  
-  Patient_ID =
-    seq_len(
-      nrow(
-        heart_failure
-      )
-    ),
-  
-  Ejection_Fraction =
-    heart_failure$ejection_fraction,
-  
-  Ejection_Fraction_Group =
-    heart_failure_dichotomized$
-    ejection_fraction_group,
-  
-  Continuous_Probability =
-    continuous_probability,
-  
-  Dichotomized_Probability =
-    dichotomized_probability,
-  
-  Absolute_Probability_Difference =
-    abs(
-      continuous_probability -
-        dichotomized_probability
-    ),
-  
-  Classification_Changed =
-    continuous_classification !=
-    dichotomized_classification,
-  
-  stringsAsFactors = FALSE
-)
-
-dichotomization_patient_comparison[
-  ,
-  c(
-    "Continuous_Probability",
-    "Dichotomized_Probability",
-    "Absolute_Probability_Difference"
-  )
-] <- round(
-  dichotomization_patient_comparison[
-    ,
-    c(
-      "Continuous_Probability",
-      "Dichotomized_Probability",
-      "Absolute_Probability_Difference"
+      (
+        dichotomized_probability >=
+          illustrative_threshold
+      ) !=
+        (
+          continuous_probability >=
+            illustrative_threshold
+        )
     )
-  ],
-  4
 )
 
-dichotomization_patient_comparison <-
-  dichotomization_patient_comparison[
-    order(
-      dichotomization_patient_comparison$
-        Absolute_Probability_Difference,
-      decreasing = TRUE
-    ),
-    ,
-    drop = FALSE
-  ]
 
-row.names(
-  dichotomization_patient_comparison
-) <- NULL
-
-head(
-  dichotomization_patient_comparison,
-  20
-)
+dichotomization_reclassification$
+  Reclassified_Percentage <-
+  (
+    dichotomization_reclassification$
+      Reclassified_N /
+      nrow(representation_data)
+  ) * 100
 
 
 # ============================================================
-# 33. Create representation sensitivity summary object
-# Consolidate all results from the representation sensitivity
-# stage for later interpretation.
+# 16. Create presentation versions
+# Raw values remain unchanged for subsequent analysis.
+# ============================================================
+
+round_numeric_columns <- function(
+    data,
+    digits = 4
+) {
+  
+  display <- data
+  
+  numeric_columns <- vapply(
+    display,
+    is.numeric,
+    logical(1)
+  )
+  
+  display[numeric_columns] <- lapply(
+    display[numeric_columns],
+    round,
+    digits = digits
+  )
+  
+  display
+}
+
+
+representation_model_comparison_display <-
+  round_numeric_columns(
+    representation_model_comparison
+  )
+
+sequential_representation_tests_display <-
+  round_numeric_columns(
+    sequential_representation_tests
+  )
+
+sequential_representation_tests_display$
+  P_Value <- format.pval(
+    sequential_representation_tests$P_Value,
+    digits = 4,
+    eps = 0.0001
+  )
+
+coefficient_stability_summary_display <-
+  round_numeric_columns(
+    coefficient_stability_summary
+  )
+
+prediction_sensitivity_summary_display <-
+  round_numeric_columns(
+    prediction_sensitivity_summary
+  )
+
+representation_reclassification_summary_display <-
+  round_numeric_columns(
+    representation_reclassification_summary
+  )
+
+dichotomization_model_comparison_display <-
+  round_numeric_columns(
+    dichotomization_model_comparison
+  )
+
+dichotomization_probability_sensitivity_display <-
+  round_numeric_columns(
+    dichotomization_probability_sensitivity
+  )
+
+dichotomization_reclassification_display <-
+  round_numeric_columns(
+    dichotomization_reclassification
+  )
+
+
+# ============================================================
+# 17. Consolidate representation-sensitivity results
 # ============================================================
 
 representation_sensitivity_analysis <- list(
   
-  Representation_Layers =
+  Layers =
+    representation_layers,
+  
+  Layer_Overview =
     representation_layer_overview,
+  
+  Models =
+    representation_models,
   
   Model_Comparison =
     representation_model_comparison,
   
-  Model_Changes =
-    representation_model_changes,
+  Sequential_Tests =
+    sequential_representation_tests,
   
-  Sequential_Model_Comparison =
-    sequential_model_comparison,
-  
-  Coefficient_Stability =
+  Coefficients =
     representation_coefficient_summary,
   
-  Age_Stability =
-    age_coefficient_stability,
-  
-  Sex_Stability =
-    sex_coefficient_stability,
+  Coefficient_Stability =
+    coefficient_stability_summary,
   
   Patient_Probabilities =
-    representation_predictions,
+    representation_probabilities,
   
   Probability_Sensitivity =
     prediction_sensitivity_summary,
   
-  Representation_Reclassification =
+  Reclassification =
     representation_reclassification_summary,
   
-  Reclassified_Patients =
-    reclassified_patients,
+  Dichotomization_Cutoff =
+    dichotomization_cutoff,
   
-  Ejection_Fraction_Dichotomization_Cutoff =
-    ejection_fraction_cutoff,
+  Dichotomization_Model =
+    dichotomized_model,
   
   Dichotomization_Model_Comparison =
     dichotomization_model_comparison,
@@ -1670,27 +829,21 @@ representation_sensitivity_analysis <- list(
     dichotomization_probability_sensitivity,
   
   Dichotomization_Reclassification =
-    dichotomization_reclassification,
-  
-  Dichotomization_Patient_Comparison =
-    dichotomization_patient_comparison
+    dichotomization_reclassification
 )
 
 
 # ============================================================
-# 34. Display final representation sensitivity overview
-# Summarize how the amount and structure of digitally available
-# patient information influence statistical model outputs.
+# 18. Display representation-sensitivity results
 # ============================================================
 
 cat(
   "\n",
   "============================================================\n",
-  "DIGITAL PATIENT REPRESENTATION SENSITIVITY ANALYSIS\n",
+  "REPRESENTATION SENSITIVITY ANALYSIS\n",
   "============================================================\n",
   sep = ""
 )
-
 
 cat(
   "\nREPRESENTATION LAYERS\n"
@@ -1700,103 +853,96 @@ print(
   representation_layer_overview
 )
 
-
 cat(
-  "\nMODEL COMPARISON ACROSS REPRESENTATION LAYERS\n"
+  "\nMODEL COMPARISON\n"
 )
 
 print(
-  representation_model_comparison
+  representation_model_comparison_display
 )
-
 
 cat(
   "\nSEQUENTIAL INFORMATION ADDITION\n"
 )
 
 print(
-  sequential_model_comparison
+  sequential_representation_tests_display
 )
 
+cat(
+  "\nCOEFFICIENT STABILITY\n"
+)
+
+print(
+  coefficient_stability_summary_display
+)
 
 cat(
   "\nPATIENT-LEVEL PROBABILITY SENSITIVITY\n"
 )
 
 print(
-  prediction_sensitivity_summary
+  prediction_sensitivity_summary_display
 )
 
-
 cat(
-  "\nILLUSTRATIVE RECLASSIFICATION UNDER REDUCED INFORMATION\n"
+  "\nILLUSTRATIVE RECLASSIFICATION\n"
 )
 
 print(
-  representation_reclassification_summary
-)
-
-
-cat(
-  "\nDICHOTOMIZATION OF EJECTION FRACTION\n"
+  representation_reclassification_summary_display
 )
 
 cat(
-  "Methodological cutoff:",
-  round(
-    ejection_fraction_cutoff,
-    2
-  ),
-  "\n"
+  "\nDICHOTOMIZATION MODEL COMPARISON\n"
 )
 
 print(
-  dichotomization_model_comparison
+  dichotomization_model_comparison_display
 )
-
 
 cat(
   "\nDICHOTOMIZATION PROBABILITY SENSITIVITY\n"
 )
 
 print(
-  dichotomization_probability_sensitivity
+  dichotomization_probability_sensitivity_display
 )
-
 
 cat(
   "\nDICHOTOMIZATION RECLASSIFICATION\n"
 )
 
 print(
-  dichotomization_reclassification
+  dichotomization_reclassification_display
 )
 
 
+# ============================================================
+# 19. Final interpretation note
+# ============================================================
+
 cat(
-  "\nIMPORTANT INTERPRETATION NOTE\n",
-  "This analysis examines how statistical model outputs depend ",
-  "on the amount and structure of digitally represented ",
-  "patient information.\n",
-  "Differences between representation layers demonstrate model ",
-  "sensitivity to information availability but do not establish ",
-  "that omitted variables are clinically necessary, causally ",
-  "related to mortality, or sufficient for real-world ",
-  "decision-making.\n",
-  "Predicted probabilities are in-sample analytical estimates ",
-  "and have not been externally validated.\n",
-  "The 0.50 probability threshold is used only to illustrate ",
-  "how information reduction can change a binary model output ",
-  "and must not be interpreted as a clinical threshold.\n",
-  "The median-based dichotomization of ejection fraction is ",
-  "also a methodological demonstration rather than a clinical ",
-  "classification rule.\n",
-  "The central analytical question is therefore not whether a ",
-  "reduced representation is clinically acceptable, but how ",
-  "strongly the statistical evidence changes when information ",
-  "about the same patient is represented differently.\n",
+  "\nINTERPRETATION NOTE\n",
+  "This analysis evaluates statistical sensitivity to changes ",
+  "in the available digital patient representation.\n",
+  "All model-performance measures and predicted probabilities ",
+  "are evaluated in sample and are not externally validated.\n",
+  "The 0.50 classification threshold and median-based ",
+  "ejection-fraction cutoff are methodological demonstrations ",
+  "without clinical meaning.\n",
+  "Changes in statistical model output do not by themselves ",
+  "establish clinical importance or decision validity.\n",
+  "Project-level clinical and decision interpretation is ",
+  "performed separately in ",
+  "10_final_clinical_and_decision_insights.R.\n",
   sep = ""
 )
 
 
+# ============================================================
+# 20. Return complete representation-sensitivity object
+# ============================================================
+
+representation_sensitivity_analysis
 
