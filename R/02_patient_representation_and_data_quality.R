@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 02_patient_representation_and_data_quality.R
 # Purpose: Assess digital patient representation and
 #          technical data quality.

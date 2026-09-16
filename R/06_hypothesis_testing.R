@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 06_hypothesis_testing.R
 # Purpose: Perform formal mortality-group hypothesis tests
 #          with multiple-testing adjustment.

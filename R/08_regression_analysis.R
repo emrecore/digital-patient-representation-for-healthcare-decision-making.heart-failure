@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 08_regression_analysis.R
 # Purpose: Evaluate mortality associations using univariable
 #          and multivariable logistic regression.

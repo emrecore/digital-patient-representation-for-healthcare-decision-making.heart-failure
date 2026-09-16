@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 05_outcome_group_comparisons.R
 # Purpose: Compare baseline patient characteristics
 #          descriptively by mortality outcome.

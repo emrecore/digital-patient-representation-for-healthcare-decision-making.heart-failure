@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 07_correlation_analysis.R
 # Purpose: Explore monotonic relationships between continuous
 #          baseline patient characteristics.

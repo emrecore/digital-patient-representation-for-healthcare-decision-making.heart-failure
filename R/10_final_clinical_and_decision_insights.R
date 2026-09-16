@@ -1,6 +1,6 @@
 # ============================================================
-# Project: Digital Patient Representation for
-#          Healthcare Decision-Making: Heart Failure
+# Project: Representation Sensitivity Analysis 
+#          in Heart Failure with R
 # File: 10_final_clinical_and_decision_insights.R
 # Purpose: Integrate statistical findings, representation
 #          sensitivity, decision relevance, and clinical limits.
