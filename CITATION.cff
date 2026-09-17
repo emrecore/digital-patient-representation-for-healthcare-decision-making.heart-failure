@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Representation Sensitivity Analysis in Heart Failure with R"
+type: software
+authors:
+  - family-names: "Bilgin"
+    given-names: "Emre"
+version: 1.0.0
+date-released: 2026-09-17
+url: "https://github.com/emrecore/representation-sensitivity-analysis-in-heart-failure-with-r"
+repository-code: "https://github.com/emrecore/representation-sensitivity-analysis-in-heart-failure-with-r"
+license: MIT
+keywords:
+  - digital patient representation
+  - representation sensitivity
+  - healthcare analytics
+  - heart failure
+  - statistical modeling
+  - R
